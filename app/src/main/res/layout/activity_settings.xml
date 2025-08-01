@@ -23,7 +23,7 @@
             android:textColor="@color/primary_color"
             android:layout_marginBottom="30dp" />
 
-        <!-- Quiz Management Section -->
+        <!-- Quiz Management -->
         <TextView
             android:id="@+id/quizManagementLabel"
             android:layout_width="wrap_content"
