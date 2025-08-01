@@ -1,16 +1,32 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <!-- App Name -->
+    <string name="app_name">Quizio</string>
+
+    <!-- Home / Second Page -->
     <string name="app_head">Quizio</string>
-    <string name="btn_txt">Let's start</string>
+    <string name="btn_txt">Let\'s Start</string>
+    <string name="play_txt">Play</string>
     <string name="setting_txt">Settings</string>
     <string name="exit_txt">Exit</string>
-    <string name="play_txt">Play</string>
     <string name="second_head">Choose an Option</string>
+
+    <!-- Quiz Page -->
     <string name="quiz_no">1/10</string>
     <string name="que_text">What is the capital of France?</string>
-    <string name="option1">Option 1</string>
-    <string name="option2">Option 2</string>
-    <string name="option3">Option 3</string>
-    <string name="option4">Option 4</string>
-    <string name="btn_nxt">NEXT</string>
+    <string name="option1">Paris</string>
+    <string name="option2">London</string>
+    <string name="option3">Rome</string>
+    <string name="option4">Berlin</string>
+    <string name="btn_nxt">Next</string>
+
+    <!-- Settings Page -->
+    <string name="settings_head">Settings</string>
+    <string name="quiz_management">Quiz Management</string>
+    <string name="add_question">Add Question</string>
+    <string name="reset_score">Reset Score</string>
+    <string name="preferences">Preferences</string>
+    <string name="sound_txt">Sound</string>
+    <string name="dark_mode_txt">Dark Mode</string>
+    <string name="about_quizify">About Quizio</string>
+    <string name="back_txt">Back</string>
 </resources>
