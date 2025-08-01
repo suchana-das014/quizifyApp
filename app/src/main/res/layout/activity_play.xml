@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    tools:context=".PlayActivity">
+
+    <!-- Top Curved Banner -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/curved_top" />
+
+    <!-- Question Counter -->
+    <TextView
+        android:id="@+id/cpt_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/quiz_no"
+        android:textColor="@color/primary_color"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:textSize="18sp" />
+
+    <!-- Question Text -->
+    <TextView
+        android:id="@+id/text_question"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/que_text"
+        android:textColor="@color/primary_color"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_margin="16dp" />
+
+    <!-- Option Buttons -->
+    <Button
+        android:id="@+id/btn_choose1"
+        style="@style/PrimaryOptionButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/option1" />
+
+    <Button
+        android:id="@+id/btn_choose2"
+        style="@style/PrimaryOptionButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/option2" />
+
+    <Button
+        android:id="@+id/btn_choose3"
+        style="@style/PrimaryOptionButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/option3" />
+
+    <Button
+        android:id="@+id/btn_choose4"
+        style="@style/PrimaryOptionButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/option4" />
+
+    <!-- Next Button -->
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_nxt"
+        android:backgroundTint="@color/primary_color"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_margin="16dp" />
+</LinearLayout>
