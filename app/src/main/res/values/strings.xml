@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="app_head">Quizio</string>
+    <string name="btn_txt">Let's start</string>
+    <string name="setting_txt">Settings</string>
+    <string name="exit_txt">Exit</string>
+    <string name="play_txt">Play</string>
+    <string name="second_head">Choose an Option</string>
+    <string name="quiz_no">1/10</string>
+    <string name="que_text">What is the capital of France?</string>
+    <string name="option1">Option 1</string>
+    <string name="option2">Option 2</string>
+    <string name="option3">Option 3</string>
+    <string name="option4">Option 4</string>
+    <string name="btn_nxt">NEXT</string>
+</resources>
