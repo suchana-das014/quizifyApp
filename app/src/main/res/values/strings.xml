@@ -3,6 +3,15 @@
     <!-- App Names -->
     <string name="app_name">Quizio</string>
     <string name="app_head">Quizio</string>
+    <string name="add_ques_entering">Enter Question</string>
+    <string name="add_ques_option1">Option 1</string>
+    <string name="add_ques_option2">Option 2</string>
+
+    <string name="add_ques_option3">Option 3</string>
+
+    <string name="add_ques_option4">Option 4</string>
+    <string name="add_ques">Add Question</string>
+
 
     <!-- Home / Second Page -->
     <string name="second_head">Choose an Option</string>
