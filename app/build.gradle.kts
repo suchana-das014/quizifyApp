@@ -74,4 +74,7 @@ dependencies {
 
     // AndroidX Test Core (needed for ApplicationProvider & Context testing)
     androidTestImplementation("androidx.test:core:1.5.0")
+    androidTestImplementation(project(":app"))
+    androidTestImplementation(project(":app"))
+    androidTestImplementation(project(":app"))
 }
