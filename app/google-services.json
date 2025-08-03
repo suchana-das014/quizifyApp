@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "166269838334",
+    "firebase_url": "https://quizioapp-default-rtdb.firebaseio.com",
+    "project_id": "quizioapp",
+    "storage_bucket": "quizioapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166269838334:android:a191aa14fa5f36916c96af",
+        "android_client_info": {
+          "package_name": "com.example.quizio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgMm58Dg7l8ks6RuJVnAbKBo0vjAtVWfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
