@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="primary_color">#147FD3</color>
-    <color name="correct_color">#4CAF50</color>   <!-- Green -->
-    <color name="wrong_color">#F44336</color>     <!-- Red -->
+    <color name="primary_color">#1E88E5</color> <!-- Bright Blue -->
+    <color name="primary_dark">#1565C0</color>
+    <color name="accent_color">#FF4081</color>
+    <color name="correct_color">#4CAF50</color> <!-- Green -->
+    <color name="wrong_color">#F44336</color> <!-- Red -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

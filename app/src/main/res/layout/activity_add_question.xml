@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add New Question"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_color"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Question Field -->
+        <EditText
+            android:id="@+id/editQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter question"
+            android:inputType="text"
+            android:layout_marginBottom="15dp"/>
+
+        <!-- Option 1 -->
+        <EditText
+            android:id="@+id/editOption1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Option 1"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Option 2 -->
+        <EditText
+            android:id="@+id/editOption2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Option 2"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Option 3 -->
+        <EditText
+            android:id="@+id/editOption3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Option 3"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Option 4 -->
+        <EditText
+            android:id="@+id/editOption4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Option 4"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- Correct Answer Selector -->
+        <Spinner
+            android:id="@+id/spinnerCorrect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/buttonSaveQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Question"
+            android:background="@color/primary_color"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+    </LinearLayout>
+</ScrollView>

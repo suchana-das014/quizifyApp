@@ -33,6 +33,18 @@
             android:name=".SecondActivity"
             android:exported="true" />
 
+        <!-- Play Activity -->
+        <activity
+            android:name=".PlayActivity"
+            android:exported="true" />
+
+        <!-- Add Question Activity -->
+        <activity
+            android:name=".AddQuestionActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ResultActivity" android:exported="true" />
+
     </application>
 
 </manifest>

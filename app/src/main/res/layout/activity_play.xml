@@ -1,80 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@android:color/white"
-    tools:context=".PlayActivity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-    <!-- Top Curved Banner   -->
+    <!-- Top curved banner -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:scaleType="fitXY"
         android:src="@drawable/curved_top" />
 
-    <!-- Question Counter -->
+    <!-- Question counter -->
     <TextView
-        android:id="@+id/cpt_question"
+        android:id="@+id/tvQuestionCounter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/quiz_no"
+        android:text="1/10"
         android:textColor="@color/primary_color"
         android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_marginTop="12dp" />
 
-    <!-- Question Text -->
+    <!-- Progress bar -->
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="6dp"
+        app:indicatorColor="@color/primary_color"
+        app:trackColor="#E0E0E0" />
+
+    <!-- Question text -->
     <TextView
-        android:id="@+id/text_question"
+        android:id="@+id/tvQuestion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/que_text"
+        android:text="Sample Question Text"
         android:textColor="@color/primary_color"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_margin="16dp" />
+        android:layout_marginTop="20dp"
+        android:lineSpacingExtra="4dp" />
 
-    <!-- Option Buttons -->
+    <!-- Options Buttons -->
     <Button
-        android:id="@+id/btn_choose1"
-        style="@style/PrimaryOptionButton"
+        android:id="@+id/btnOption1"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="@string/option1" />
+        android:text="Option 1"
+        android:textColor="@color/primary_color"
+        android:layout_marginTop="12dp" />
 
     <Button
-        android:id="@+id/btn_choose2"
-        style="@style/PrimaryOptionButton"
+        android:id="@+id/btnOption2"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="@string/option2" />
+        android:text="Option 2"
+        android:textColor="@color/primary_color"
+        android:layout_marginTop="12dp" />
 
     <Button
-        android:id="@+id/btn_choose3"
-        style="@style/PrimaryOptionButton"
+        android:id="@+id/btnOption3"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="@string/option3" />
+        android:text="Option 3"
+        android:textColor="@color/primary_color"
+        android:layout_marginTop="12dp" />
 
     <Button
-        android:id="@+id/btn_choose4"
-        style="@style/PrimaryOptionButton"
+        android:id="@+id/btnOption4"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="@string/option4" />
+        android:text="Option 4"
+        android:textColor="@color/primary_color"
+        android:layout_marginTop="12dp" />
 
     <!-- Next Button -->
     <Button
-        android:id="@+id/btn_next"
+        android:id="@+id/btnNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_nxt"
-        android:backgroundTint="@color/primary_color"
+        android:text="Next"
         android:textColor="@android:color/white"
+        android:backgroundTint="@color/primary_color"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:layout_margin="16dp" />
+        android:layout_marginTop="24dp"
+        android:enabled="false" />
 </LinearLayout>
