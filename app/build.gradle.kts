@@ -77,4 +77,5 @@ dependencies {
     androidTestImplementation(project(":app"))
     androidTestImplementation(project(":app"))
     androidTestImplementation(project(":app"))
+    androidTestImplementation(project(":app"))
 }
