@@ -2,7 +2,6 @@ package com.example.quizio;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,47 +15,45 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AddQuestionActivity extends AppCompatActivity {
 
-    private EditText editQuestion, editOption1, editOption2, editOption3, editOption4;
-    private Spinner spinnerCorrect;
-    private Button buttonSaveQuestion;
+    private EditText etQuestion, etOption1, etOption2, etOption3, etOption4;
+    private Spinner spinnerCategory, spinnerCorrectAnswer;
+    private Button btnAddQuestion;
 
     private static final String PREFS_NAME = "QuizAppPrefs";
     private static final String KEY_CUSTOM_QUESTIONS = "CustomQuestions";
 
-    private List<QuestionModel> questionList = new ArrayList<>();
+    private List<QuestionModel> customQuestions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_question);
 
-        editQuestion = findViewById(R.id.editQuestion);
-        editOption1 = findViewById(R.id.editOption1);
-        editOption2 = findViewById(R.id.editOption2);
-        editOption3 = findViewById(R.id.editOption3);
-        editOption4 = findViewById(R.id.editOption4);
-        spinnerCorrect = findViewById(R.id.spinnerCorrect);
-        buttonSaveQuestion = findViewById(R.id.buttonSaveQuestion);
+        etQuestion = findViewById(R.id.etQuestion);
+        etOption1 = findViewById(R.id.etOption1);
+        etOption2 = findViewById(R.id.etOption2);
+        etOption3 = findViewById(R.id.etOption3);
+        etOption4 = findViewById(R.id.etOption4);
+        spinnerCategory = findViewById(R.id.spinnerCategory);
+        spinnerCorrectAnswer = findViewById(R.id.spinnerCorrectAnswer);
+        btnAddQuestion = findViewById(R.id.btnAddQuestion);
 
-        // Spinner options (for correct answer)
-        String[] options = {"Option 1", "Option 2", "Option 3", "Option 4"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_dropdown_item, options);
-        spinnerCorrect.setAdapter(adapter);
-
-        // Load existing custom questions from SharedPreferences
+        setupCategorySpinner();
         loadCustomQuestions();
 
-        buttonSaveQuestion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveQuestion();
-            }
-        });
+        btnAddQuestion.setOnClickListener(v -> addQuestion());
+    }
+
+    private void setupCategorySpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.categories_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
     }
 
     private void loadCustomQuestions() {
@@ -65,64 +62,48 @@ public class AddQuestionActivity extends AppCompatActivity {
         if (json != null) {
             Gson gson = new Gson();
             Type type = new TypeToken<List<QuestionModel>>() {}.getType();
-            List<QuestionModel> savedQuestions = gson.fromJson(json, type);
-            if (savedQuestions != null) {
-                questionList = savedQuestions;
-            }
+            customQuestions = gson.fromJson(json, type);
+        } else {
+            customQuestions = new ArrayList<>();
         }
     }
 
-    private void saveQuestion() {
-        String question = editQuestion.getText().toString().trim();
-        String option1 = editOption1.getText().toString().trim();
-        String option2 = editOption2.getText().toString().trim();
-        String option3 = editOption3.getText().toString().trim();
-        String option4 = editOption4.getText().toString().trim();
-        int correctIndex = spinnerCorrect.getSelectedItemPosition();
+    private void addQuestion() {
+        String question = etQuestion.getText().toString().trim();
+        String option1 = etOption1.getText().toString().trim();
+        String option2 = etOption2.getText().toString().trim();
+        String option3 = etOption3.getText().toString().trim();
+        String option4 = etOption4.getText().toString().trim();
+        String category = spinnerCategory.getSelectedItem().toString();
+        String correctAnswer = option1; // Default for now (can choose via another spinner)
 
-        // Validate fields
         if (question.isEmpty() || option1.isEmpty() || option2.isEmpty() ||
                 option3.isEmpty() || option4.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Prepare options list
-        List<String> options = new ArrayList<>();
-        options.add(option1);
-        options.add(option2);
-        options.add(option3);
-        options.add(option4);
+        List<String> optionsList = Arrays.asList(option1, option2, option3, option4);
 
-        // Create new question model
-        QuestionModel newQuestion = new QuestionModel(question, options, options.get(correctIndex));
+        QuestionModel newQuestion = new QuestionModel(question, optionsList, correctAnswer, category);
+        customQuestions.add(newQuestion);
 
-        // Add to question list and save to SharedPreferences
-        questionList.add(newQuestion);
-        saveQuestionsToPrefs();
-
-        Toast.makeText(this, "Question added successfully!", Toast.LENGTH_SHORT).show();
-
-        // Clear fields after saving
-        clearFields();
-    }
-
-    private void saveQuestionsToPrefs() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
         Gson gson = new Gson();
-        String json = gson.toJson(questionList);
-        editor.putString(KEY_CUSTOM_QUESTIONS, json);
+        editor.putString(KEY_CUSTOM_QUESTIONS, gson.toJson(customQuestions));
         editor.apply();
+
+        Toast.makeText(this, "Question Added!", Toast.LENGTH_SHORT).show();
+        clearInputs();
     }
 
-    private void clearFields() {
-        editQuestion.setText("");
-        editOption1.setText("");
-        editOption2.setText("");
-        editOption3.setText("");
-        editOption4.setText("");
-        spinnerCorrect.setSelection(0);
+    private void clearInputs() {
+        etQuestion.setText("");
+        etOption1.setText("");
+        etOption2.setText("");
+        etOption3.setText("");
+        etOption4.setText("");
     }
 }

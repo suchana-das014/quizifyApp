@@ -9,28 +9,29 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ResultActivity extends AppCompatActivity {
 
-    TextView textResult;
-    Button buttonRestart;
+    private TextView tvScore;
+    private Button btnRestart, btnExit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
-        textResult = findViewById(R.id.textResult);
-        buttonRestart = findViewById(R.id.buttonRestart);
+        tvScore = findViewById(R.id.tvScore);
+        btnRestart = findViewById(R.id.btnRestart);
+        btnExit = findViewById(R.id.btnExit);
 
-        // Get score and total from Intent
         int score = getIntent().getIntExtra("score", 0);
-        int total = getIntent().getIntExtra("total", 0);
+        int total = getIntent().getIntExtra("total", 10);
 
-        textResult.setText("Your Score: " + score + " / " + total);
+        tvScore.setText("Your Score: " + score + " / " + total);
 
-        buttonRestart.setOnClickListener(v -> {
-            Intent intent = new Intent(ResultActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        btnRestart.setOnClickListener(v -> {
+            Intent intent = new Intent(ResultActivity.this, CategoryActivity.class);
             startActivity(intent);
             finish();
         });
+
+        btnExit.setOnClickListener(v -> finishAffinity());
     }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="etQuestion" type="id" />
+    <item name="etOption1" type="id" />
+    <item name="etOption2" type="id" />
+    <item name="etOption3" type="id" />
+    <item name="etOption4" type="id" />
+    <item name="spinnerCategory" type="id" />
+    <item name="spinnerCorrectAnswer" type="id" />
+    <item name="btnAddQuestion" type="id" />
+
+    <item name="tvQuestionCounter" type="id" />
+    <item name="progressBar" type="id" />
+    <item name="tvQuestion" type="id" />
+    <item name="btnOption1" type="id" />
+    <item name="btnOption2" type="id" />
+    <item name="btnOption3" type="id" />
+    <item name="btnOption4" type="id" />
+    <item name="btnNext" type="id" />
+
+    <item name="btnCategoryGK" type="id" />
+    <item name="btnCategoryScience" type="id" />
+    <item name="btnCategorySports" type="id" />
+    <item name="btnCategoryTech" type="id" />
+</resources>

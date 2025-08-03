@@ -2,80 +2,97 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    android:background="@android:color/white">
+    android:padding="16dp">
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <!-- Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add New Question"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_color"
-            android:layout_marginBottom="20dp" />
-
-        <!-- Question Field -->
+        <!-- Question input -->
         <EditText
-            android:id="@+id/editQuestion"
+            android:id="@+id/etQuestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter question"
+            android:hint="Enter Question"
             android:inputType="text"
-            android:layout_marginBottom="15dp"/>
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text"
+            android:textSize="16sp" />
 
         <!-- Option 1 -->
         <EditText
-            android:id="@+id/editOption1"
+            android:id="@+id/etOption1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Option 1"
-            android:layout_marginBottom="10dp"/>
+            android:inputType="text"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@android:drawable/edit_text"
+            android:textSize="16sp" />
 
         <!-- Option 2 -->
         <EditText
-            android:id="@+id/editOption2"
+            android:id="@+id/etOption2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Option 2"
-            android:layout_marginBottom="10dp"/>
+            android:inputType="text"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@android:drawable/edit_text"
+            android:textSize="16sp" />
 
         <!-- Option 3 -->
         <EditText
-            android:id="@+id/editOption3"
+            android:id="@+id/etOption3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Option 3"
-            android:layout_marginBottom="10dp"/>
+            android:inputType="text"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@android:drawable/edit_text"
+            android:textSize="16sp" />
 
         <!-- Option 4 -->
         <EditText
-            android:id="@+id/editOption4"
+            android:id="@+id/etOption4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Option 4"
-            android:layout_marginBottom="20dp"/>
+            android:inputType="text"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:background="@android:drawable/edit_text"
+            android:textSize="16sp" />
 
-        <!-- Correct Answer Selector -->
+        <!-- Category Spinner -->
         <Spinner
-            android:id="@+id/spinnerCorrect"
+            android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginTop="20dp" />
 
-        <!-- Save Button -->
-        <Button
-            android:id="@+id/buttonSaveQuestion"
+        <!-- Correct Answer Spinner -->
+        <Spinner
+            android:id="@+id/spinnerCorrectAnswer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save Question"
-            android:background="@color/primary_color"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"/>
+            android:layout_marginTop="20dp" />
+
+        <!-- Add Question Button -->
+        <Button
+            android:id="@+id/btnAddQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Question"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/primary_color"
+            android:textColor="@android:color/white" />
+
     </LinearLayout>
 </ScrollView>

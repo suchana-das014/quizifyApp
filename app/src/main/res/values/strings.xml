@@ -1,23 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- App Name -->
+    <!-- App Names -->
     <string name="app_name">Quizio</string>
+    <string name="app_head">Quizio</string>
 
     <!-- Home / Second Page -->
-    <string name="app_head">Quizio</string>
-    <string name="btn_txt">Let\'s Start</string>
-    <string name="play_txt">Play</string>
-    <string name="setting_txt">Settings</string>
-    <string name="exit_txt">Exit</string>
     <string name="second_head">Choose an Option</string>
-
-    <!-- Quiz Page -->
-    <string name="quiz_no">1/10</string>
-    <string name="que_text">What is the capital of France?</string>
-    <string name="option1">Paris</string>
-    <string name="option2">London</string>
-    <string name="option3">Rome</string>
-    <string name="option4">Berlin</string>
-    <string name="btn_nxt">Next</string>
 
     <!-- Settings Page -->
     <string name="settings_head">Settings</string>
@@ -27,6 +15,19 @@
     <string name="preferences">Preferences</string>
     <string name="sound_txt">Sound</string>
     <string name="dark_mode_txt">Dark Mode</string>
-    <string name="about_quizify">About Quizio</string>
     <string name="back_txt">Back</string>
+
+    <!-- Common Texts -->
+    <string name="play_txt">Play</string>
+    <string name="setting_txt">Settings</string>
+    <string name="exit_txt">Exit</string>
+    <string name="about_quizify">About Quizio</string>
+
+    <!-- Category List -->
+    <string-array name="categories_array">
+        <item>General Knowledge</item>
+        <item>Science</item>
+        <item>Sports</item>
+        <item>Technology</item>
+    </string-array>
 </resources>

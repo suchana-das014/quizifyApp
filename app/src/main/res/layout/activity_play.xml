@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@android:color/white"
@@ -7,14 +8,23 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Top curved banner -->
+    <!-- Back Button -->
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="@color/primary_color"
+        android:backgroundTint="@android:color/transparent"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:scaleType="fitXY"
         android:src="@drawable/curved_top" />
 
-    <!-- Question counter -->
     <TextView
         android:id="@+id/tvQuestionCounter"
         android:layout_width="wrap_content"
@@ -25,7 +35,6 @@
         android:textSize="18sp"
         android:layout_marginTop="12dp" />
 
-    <!-- Progress bar -->
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progressBar"
         android:layout_width="match_parent"
@@ -34,7 +43,6 @@
         app:indicatorColor="@color/primary_color"
         app:trackColor="#E0E0E0" />
 
-    <!-- Question text -->
     <TextView
         android:id="@+id/tvQuestion"
         android:layout_width="match_parent"
@@ -46,7 +54,6 @@
         android:layout_marginTop="20dp"
         android:lineSpacingExtra="4dp" />
 
-    <!-- Options Buttons -->
     <Button
         android:id="@+id/btnOption1"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -83,16 +90,16 @@
         android:textColor="@color/primary_color"
         android:layout_marginTop="12dp" />
 
-    <!-- Next Button -->
     <Button
         android:id="@+id/btnNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Next"
+        android:text="Submit"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/primary_color"
         android:textStyle="bold"
         android:textSize="18sp"
         android:layout_marginTop="24dp"
         android:enabled="false" />
+
 </LinearLayout>

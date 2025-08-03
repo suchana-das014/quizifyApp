@@ -1,27 +1,33 @@
 package com.example.quizio;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class QuestionModel implements Serializable {
+public class QuestionModel {
     private String question;
     private List<String> options;
     private String correctAnswer;
+    private String category;
 
-    public QuestionModel() {}
-
-    public QuestionModel(String question, List<String> options, String correctAnswer) {
+    public QuestionModel(String question, List<String> options, String correctAnswer, String category) {
         this.question = question;
         this.options = options;
         this.correctAnswer = correctAnswer;
+        this.category = category;
     }
 
-    public String getQuestion() { return question; }
-    public void setQuestion(String question) { this.question = question; }
+    public String getQuestion() {
+        return question;
+    }
 
-    public List<String> getOptions() { return options; }
-    public void setOptions(List<String> options) { this.options = options; }
+    public List<String> getOptions() {
+        return options;
+    }
 
-    public String getCorrectAnswer() { return correctAnswer; }
-    public void setCorrectAnswer(String correctAnswer) { this.correctAnswer = correctAnswer; }
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public String getCategory() {
+        return category;
+    }
 }

@@ -2,151 +2,100 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="20dp"
-        android:layout_marginTop="50dp">
+        android:orientation="vertical">
 
-        <!-- Title -->
+        <!-- Settings Header -->
         <TextView
-            android:id="@+id/settingsTitle"
+            android:id="@+id/tvSettingsHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_head"
-            android:textSize="32sp"
+            android:text="Settings"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/primary_color"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginBottom="24dp" />
 
-        <!-- quiz Management -->
-        <TextView
-            android:id="@+id/quizManagementLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/quiz_management"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/buttonAddQuestion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/primary_color"
-            android:text="@string/add_question"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="15dp"
-            android:padding="12dp"
-            android:contentDescription="@string/add_question" />
-
-        <Button
-            android:id="@+id/buttonResetScore"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/primary_color"
-            android:text="@string/reset_score"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="25dp"
-            android:padding="12dp"
-            android:contentDescription="@string/reset_score" />
-
-        <!-- Preferences Section -->
-        <TextView
-            android:id="@+id/preferencesLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/preferences"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Sound Switch Row -->
+        <!-- Dark Mode Switch -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingVertical="8dp"
-            android:layout_marginBottom="8dp">
+            android:gravity="center_vertical"
+            android:paddingVertical="12dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/sound_txt"
+                android:text="Dark Mode"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
-
-            <Switch
-                android:id="@+id/switchSound"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:thumbTint="@color/primary_color"
-                android:contentDescription="@string/sound_txt" />
-        </LinearLayout>
-
-        <!-- Dark Mode Switch Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="8dp"
-            android:layout_marginBottom="20dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/dark_mode_txt"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/primary_color" />
 
             <Switch
                 android:id="@+id/switchDarkMode"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:thumbTint="@color/primary_color"
-                android:contentDescription="@string/dark_mode_txt" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Add Question Button -->
+        <Button
+            android:id="@+id/buttonAddQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Question"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/primary_color"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Reset Score Button -->
+        <Button
+            android:id="@+id/buttonResetScore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reset Score"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/wrong_color"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
         <!-- About Button -->
         <Button
             android:id="@+id/buttonAbout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/primary_color"
-            android:text="@string/about_quizify"
+            android:text="About Quizio"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/primary_color"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginBottom="15dp"
-            android:padding="12dp"
-            android:contentDescription="@string/about_quizify" />
+            android:layout_marginBottom="16dp" />
 
         <!-- Back Button -->
         <Button
             android:id="@+id/buttonBack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/primary_color"
-            android:text="@string/back_txt"
+            android:text="Back"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/primary_color"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:padding="12dp"
-            android:contentDescription="@string/back_txt" />
+            android:textStyle="bold" />
 
     </LinearLayout>
 </ScrollView>

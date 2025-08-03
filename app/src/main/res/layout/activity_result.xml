@@ -2,31 +2,39 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="30dp"
+    android:gravity="center"
+    android:padding="24dp"
     android:background="@android:color/white">
 
     <TextView
-        android:id="@+id/textResult"
+        android:id="@+id/tvScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your Score:"
-        android:textSize="32sp"
-        android:textStyle="bold"
+        android:text="Your Score: 0 / 10"
+        android:textSize="24sp"
         android:textColor="@color/primary_color"
+        android:textStyle="bold"
         android:layout_marginBottom="40dp"/>
 
     <Button
-        android:id="@+id/buttonRestart"
-        android:layout_width="wrap_content"
+        android:id="@+id/btnRestart"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Restart Quiz"
-        android:background="@color/primary_color"
+        android:text="Restart"
+        android:backgroundTint="@color/primary_color"
         android:textColor="@android:color/white"
-        android:textSize="18sp"
         android:textStyle="bold"
-        android:padding="12dp"/>
+        android:layout_marginBottom="20dp"/>
+
+    <Button
+        android:id="@+id/btnExit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Exit"
+        android:backgroundTint="@color/wrong_color"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
 
 </LinearLayout>
