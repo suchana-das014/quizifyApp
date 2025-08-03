@@ -3,30 +3,30 @@ package com.example.quizio;
 import java.util.List;
 
 public class QuizManager {
-    private final List<QuestionModel> questionList;
+    private List<QuestionModel> questions;
     private int currentIndex = 0;
     private int score = 0;
 
-    public QuizManager(List<QuestionModel> questionList) {
-        this.questionList = questionList;
+    public QuizManager(List<QuestionModel> questions) {
+        this.questions = questions;
     }
 
     public QuestionModel getCurrentQuestion() {
-        return questionList.get(currentIndex);
+        return questions.get(currentIndex);
     }
 
     public boolean submitAnswer(String answer) {
-        boolean correct = getCurrentQuestion().getCorrectAnswer().equals(answer);
-        if (correct) score++;
-        return correct;
-    }
-
-    public boolean moveToNext() {
-        if (currentIndex < questionList.size() - 1) {
-            currentIndex++;
+        if (getCurrentQuestion().getCorrectAnswer().equals(answer)) {
+            score++;
             return true;
         }
         return false;
+    }
+
+    public void moveToNext() {
+        if (currentIndex < questions.size() - 1) {
+            currentIndex++;
+        }
     }
 
     public int getScore() {
@@ -34,10 +34,6 @@ public class QuizManager {
     }
 
     public int getTotalQuestions() {
-        return questionList.size();
-    }
-
-    public int getCurrentIndex() {
-        return currentIndex;
+        return questions.size();
     }
 }

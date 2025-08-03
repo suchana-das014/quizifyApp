@@ -57,9 +57,21 @@ dependencies {
 
     // Gson for JSON storage (custom questions)
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.androidx.core)
 
-    // Testing
+    // Testing - JUnit (Unit tests)
     testImplementation(libs.junit)
+
+    // Mockito for Unit Testing
+    testImplementation("org.mockito:mockito-core:5.11.0")
+
+    // Instrumentation Testing (Android)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Mockito for Android Instrumentation Tests
+    androidTestImplementation("org.mockito:mockito-android:5.11.0")
+
+    // AndroidX Test Core (needed for ApplicationProvider & Context testing)
+    androidTestImplementation("androidx.test:core:1.5.0")
 }
