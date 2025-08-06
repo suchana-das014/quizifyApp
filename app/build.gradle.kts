@@ -64,6 +64,7 @@ dependencies {
 
     // Mockito for Unit Testing
     testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation(libs.junit.jupiter)
 
     // Instrumentation Testing (Android)
     androidTestImplementation(libs.ext.junit)
