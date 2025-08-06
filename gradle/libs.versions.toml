@@ -17,6 +17,7 @@ mockito = "5.11.0"
 androidxTestCore = "1.5.0"
 core = "1.7.0"
 junitJupiter = "5.8.1"
+firebaseFirestore = "26.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -38,6 +39,7 @@ mockito-android = { group = "org.mockito", name = "mockito-android", version.ref
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

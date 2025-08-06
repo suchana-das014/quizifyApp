@@ -32,51 +32,65 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    // Enable View Binding (optional, helps cleaner code)
+    // View Binding for easier UI handling
     buildFeatures {
         viewBinding = true
+    }
+
+    // Ensure JUnit 5 works for local tests
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
 dependencies {
 
-    // AndroidX Core Components
+    // --- Core AndroidX & Material Components ---
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.androidx.core)
 
-    // Firebase (Auth + Database)
+    // --- Firebase ---
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
 
-    // Google Sign-In / Credentials API
+    // --- Google Sign-In / Credentials API ---
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
 
-    // Gson for JSON storage (custom questions)
+    // --- JSON (Gson) ---
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation(libs.androidx.core)
+    implementation(libs.firebase.firestore)
 
-    // Testing - JUnit (Unit tests)
-    testImplementation(libs.junit)
+    // ========================
+    // TESTING DEPENDENCIES
+    // ========================
 
-    // Mockito for Unit Testing
+    // --- JUnit 5 (Local Unit Tests) ---
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2") // For @CsvFileSource
+
+    // --- Mockito (Local Unit Tests) ---
     testImplementation("org.mockito:mockito-core:5.11.0")
-    testImplementation(libs.junit.jupiter)
+    testImplementation("org.mockito:mockito-junit-jupiter:5.11.0")
 
-    // Instrumentation Testing (Android)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    // --- Android Instrumentation Tests (JUnit4/Espresso) ---
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    // Mockito for Android Instrumentation Tests
+    // --- Mockito for Android Instrumentation ---
     androidTestImplementation("org.mockito:mockito-android:5.11.0")
 
-    // AndroidX Test Core (needed for ApplicationProvider & Context testing)
+    // --- AndroidX Test Core ---
     androidTestImplementation("androidx.test:core:1.5.0")
-    androidTestImplementation(project(":app"))
-    androidTestImplementation(project(":app"))
-    androidTestImplementation(project(":app"))
-    androidTestImplementation(project(":app"))
+}
+
+// Use JUnit Platform for running tests
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
