@@ -1,9 +1,7 @@
 package com.example.quizio;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -33,7 +31,7 @@ public class PlayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
-        // Bind views
+        // Bind UI components
         tvQuestionCounter = findViewById(R.id.tvQuestionCounter);
         tvQuestion = findViewById(R.id.tvQuestion);
         btnOption1 = findViewById(R.id.btnOption1);
@@ -44,42 +42,35 @@ public class PlayActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         progressBar = findViewById(R.id.progressBar);
 
-        // Back button click: finish activity to go back
+        // Back button finishes activity
         btnBack.setOnClickListener(v -> finish());
 
-        // Get category from intent
+        // Get category from intent extras
         category = getIntent().getStringExtra("category");
+        if (category == null || category.isEmpty()) {
+            category = "General Knowledge";
+        }
 
-        // Load questions based on category
         loadQuestions(category);
-
-        // Show first question
         showQuestion();
 
-        // Option button listeners
-        View.OnClickListener optionClickListener = v -> {
-            if (answered) return; // Ignore if already answered
+        // Option buttons click
+        Button[] optionButtons = {btnOption1, btnOption2, btnOption3, btnOption4};
+        for (Button btn : optionButtons) {
+            btn.setOnClickListener(v -> {
+                if (answered) return;
+                selectedAnswer = btn.getText().toString();
+                resetOptionColors();
+                btn.setBackgroundColor(getResources().getColor(R.color.accent_color));
+                btnNext.setEnabled(true);
+            });
+        }
 
-            Button clickedButton = (Button) v;
-            selectedAnswer = clickedButton.getText().toString();
-            resetOptionColors();
-            clickedButton.setBackgroundColor(getResources().getColor(R.color.accent_color));
-            btnNext.setEnabled(true);
-        };
-
-        btnOption1.setOnClickListener(optionClickListener);
-        btnOption2.setOnClickListener(optionClickListener);
-        btnOption3.setOnClickListener(optionClickListener);
-        btnOption4.setOnClickListener(optionClickListener);
-
-        // Next button listener
+        // Next button click logic
         btnNext.setOnClickListener(v -> {
             if (!answered) {
-                // Submit answer
-                if (selectedAnswer.isEmpty()) {
-                    // No option selected, ignore click
-                    return;
-                }
+                if (selectedAnswer.isEmpty()) return;
+
                 checkAnswerAndShowColors();
                 answered = true;
 
@@ -90,7 +81,6 @@ public class PlayActivity extends AppCompatActivity {
                 }
                 setOptionsEnabled(false);
             } else {
-                // Move to next question or finish
                 currentQuestionIndex++;
                 if (currentQuestionIndex < questionList.size()) {
                     showQuestion();
@@ -108,10 +98,14 @@ public class PlayActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     private void loadQuestions(String category) {
         questionList = new ArrayList<>();
-
-        if (category == null) category = "";
 
         switch (category) {
             case "General Knowledge":
@@ -207,7 +201,8 @@ public class PlayActivity extends AppCompatActivity {
                 break;
 
             default:
-                // Fallback: add some default questions or empty list
+                questionList.add(new QuestionModel("Sample Question?",
+                        Arrays.asList("A", "B", "C", "D"), "A", "Default"));
                 break;
         }
     }
@@ -221,15 +216,13 @@ public class PlayActivity extends AppCompatActivity {
 
         tvQuestion.setText(currentQuestion.getQuestion());
         tvQuestionCounter.setText((currentQuestionIndex + 1) + "/" + questionList.size());
-        progressBar.setProgress((int) (((float) (currentQuestionIndex + 1) / questionList.size()) * 100));
+
+        progressBar.setProgressCompat((currentQuestionIndex + 1) * 100 / questionList.size(), true);
 
         btnOption1.setText(currentQuestion.getOptions().get(0));
         btnOption2.setText(currentQuestion.getOptions().get(1));
         btnOption3.setText(currentQuestion.getOptions().get(2));
         btnOption4.setText(currentQuestion.getOptions().get(3));
-
-        btnNext.setText("Submit");
-        setOptionsEnabled(true);
     }
 
     private void checkAnswerAndShowColors() {
@@ -237,12 +230,10 @@ public class PlayActivity extends AppCompatActivity {
 
         resetOptionColors();
 
-        // Color correct answer green
-        colorOptionButton(correctAnswer, Color.parseColor("#4CAF50"));
+        colorOptionButton(correctAnswer, getResources().getColor(R.color.correct_color));
 
-        // If selected answer is wrong, color it red
         if (!selectedAnswer.equals(correctAnswer)) {
-            colorOptionButton(selectedAnswer, Color.parseColor("#F44336"));
+            colorOptionButton(selectedAnswer, getResources().getColor(R.color.wrong_color));
         } else {
             score++;
         }
@@ -268,9 +259,10 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void resetOptionColors() {
-        btnOption1.setBackgroundColor(Color.TRANSPARENT);
-        btnOption2.setBackgroundColor(Color.TRANSPARENT);
-        btnOption3.setBackgroundColor(Color.TRANSPARENT);
-        btnOption4.setBackgroundColor(Color.TRANSPARENT);
+        int defaultColor = getResources().getColor(android.R.color.transparent);
+        btnOption1.setBackgroundColor(defaultColor);
+        btnOption2.setBackgroundColor(defaultColor);
+        btnOption3.setBackgroundColor(defaultColor);
+        btnOption4.setBackgroundColor(defaultColor);
     }
 }
