@@ -15,6 +15,11 @@ public class QuizManager {
         return questions.get(currentIndex);
     }
 
+    // Add this method for test purposes
+    public QuestionModel getQuestionAtIndex(int index) {
+        return questions.get(index);  // throws IndexOutOfBoundsException if index invalid
+    }
+
     public boolean submitAnswer(String answer) {
         if (getCurrentQuestion().getCorrectAnswer().equals(answer)) {
             score++;
