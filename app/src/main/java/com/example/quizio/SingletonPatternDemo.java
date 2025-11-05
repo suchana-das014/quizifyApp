@@ -1,5 +1,5 @@
 package com.example.quizio;
-
+//singleton
 class QuizManager {
     private static QuizManager instance;
 
