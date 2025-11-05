@@ -1,14 +1,20 @@
 package com.example.quizio.models;
 
-public class QuestionFactory {
+import java.util.List;
 
-    public static QuestionModel createQuestion(String type, String questionText, String[] options, String correctAnswer, int score) {
-        switch (type.toLowerCase()) {
-            case "mcq":
-                return new MCQQuestion(questionText, options, correctAnswer, score);
-            case "truefalse":
-                boolean ans = correctAnswer.equalsIgnoreCase("true");
-                return new TrueFalseQuestion(questionText, ans, score);
+public class QuestionFactory {
+    public static QuestionModel createQuestion(String type, String question,
+                                               List<String> options, String correctAnswer,
+                                               String category) {
+        switch (type) {
+            case "MCQ":
+                return new MCQQuestion(question, options, correctAnswer, category);
+            case "TrueFalse":
+                // For TrueFalse questions, we don't need the options parameter
+                return new TrueFalseQuestion(question, correctAnswer, category);
+            case "FillBlank":
+                // For FillBlank questions, we don't need the options parameter
+                return new FillBlankQuestion(question, correctAnswer, category);
             default:
                 throw new IllegalArgumentException("Unknown question type: " + type);
         }
