@@ -4,9 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import com.example.quizio.models.MCQQuestion;
+import com.example.quizio.models.QuestionFactory;
+import com.example.quizio.models.QuestionModel;
+import com.example.quizio.strategies.HardMode;
+import com.example.quizio.strategies.NormalMode;
+import com.example.quizio.strategies.ScoringStrategy;
+import com.example.quizio.strategies.TimedMode;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.ArrayList;
@@ -24,7 +33,10 @@ public class PlayActivity extends AppCompatActivity {
     private int score = 0;
     private String selectedAnswer = "";
     private String category;
+    private String gameMode;
     private boolean answered = false;
+    private ScoringStrategy scoringStrategy;
+    private long questionStartTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +57,19 @@ public class PlayActivity extends AppCompatActivity {
         // Back button finishes activity
         btnBack.setOnClickListener(v -> finish());
 
-        // Get category from intent extras
+        // Get category and game mode from intent extras
         category = getIntent().getStringExtra("category");
+        gameMode = getIntent().getStringExtra("gameMode");
+
         if (category == null || category.isEmpty()) {
             category = "General Knowledge";
         }
+        if (gameMode == null || gameMode.isEmpty()) {
+            gameMode = "normal";
+        }
+
+        // Initialize scoring strategy based on game mode
+        setupScoringStrategy(gameMode);
 
         loadQuestions(category);
         showQuestion();
@@ -61,7 +81,8 @@ public class PlayActivity extends AppCompatActivity {
                 if (answered) return;
                 selectedAnswer = btn.getText().toString();
                 resetOptionColors();
-                btn.setBackgroundColor(getResources().getColor(R.color.accent_color));
+                // Use ContextCompat instead of deprecated getResources().getColor()
+                btn.setBackgroundColor(ContextCompat.getColor(PlayActivity.this, R.color.accent_color));
                 btnNext.setEnabled(true);
             });
         }
@@ -91,6 +112,8 @@ public class PlayActivity extends AppCompatActivity {
                     Intent intent = new Intent(PlayActivity.this, ResultActivity.class);
                     intent.putExtra("score", score);
                     intent.putExtra("total", questionList.size());
+                    intent.putExtra("gameMode", gameMode);
+                    intent.putExtra("category", category);
                     startActivity(intent);
                     finish();
                 }
@@ -104,105 +127,120 @@ public class PlayActivity extends AppCompatActivity {
         finish();
     }
 
+    private void setupScoringStrategy(String mode) {
+        switch (mode) {
+            case "hard":
+                scoringStrategy = new HardMode();
+                break;
+            case "timed":
+                scoringStrategy = new TimedMode();
+                break;
+            case "normal":
+            default:
+                scoringStrategy = new NormalMode();
+                break;
+        }
+    }
+
     private void loadQuestions(String category) {
         questionList = new ArrayList<>();
 
         switch (category) {
             case "General Knowledge":
-                questionList.add(new QuestionModel("Capital of France?",
-                        Arrays.asList("Paris", "London", "Rome", "Berlin"), "Paris", category));
-                questionList.add(new QuestionModel("Largest planet in Solar System?",
-                        Arrays.asList("Mars", "Jupiter", "Saturn", "Venus"), "Jupiter", category));
-                questionList.add(new QuestionModel("Who wrote 'Hamlet'?",
-                        Arrays.asList("Mark Twain", "William Shakespeare", "Charles Dickens", "Jane Austen"), "William Shakespeare", category));
-                questionList.add(new QuestionModel("The Great Wall is located in which country?",
-                        Arrays.asList("India", "China", "Japan", "Korea"), "China", category));
-                questionList.add(new QuestionModel("Which continent is Egypt in?",
-                        Arrays.asList("Africa", "Asia", "Europe", "Australia"), "Africa", category));
-                questionList.add(new QuestionModel("How many colors are in a rainbow?",
-                        Arrays.asList("5", "6", "7", "8"), "7", category));
-                questionList.add(new QuestionModel("The currency of Japan is?",
-                        Arrays.asList("Yuan", "Yen", "Won", "Dollar"), "Yen", category));
-                questionList.add(new QuestionModel("What is the tallest mountain in the world?",
-                        Arrays.asList("K2", "Everest", "Kangchenjunga", "Lhotse"), "Everest", category));
-                questionList.add(new QuestionModel("Who painted the Mona Lisa?",
-                        Arrays.asList("Vincent Van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Claude Monet"), "Leonardo da Vinci", category));
-                questionList.add(new QuestionModel("Which ocean is the largest?",
-                        Arrays.asList("Atlantic", "Indian", "Arctic", "Pacific"), "Pacific", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Capital of France?",
+                        new ArrayList<>(Arrays.asList("Paris", "London", "Rome", "Berlin")), "Paris", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Largest planet in Solar System?",
+                        new ArrayList<>(Arrays.asList("Mars", "Jupiter", "Saturn", "Venus")), "Jupiter", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Who wrote 'Hamlet'?",
+                        new ArrayList<>(Arrays.asList("Mark Twain", "William Shakespeare", "Charles Dickens", "Jane Austen")), "William Shakespeare", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "The Great Wall is located in which country?",
+                        new ArrayList<>(Arrays.asList("India", "China", "Japan", "Korea")), "China", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which continent is Egypt in?",
+                        new ArrayList<>(Arrays.asList("Africa", "Asia", "Europe", "Australia")), "Africa", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "How many colors are in a rainbow?",
+                        new ArrayList<>(Arrays.asList("5", "6", "7", "8")), "7", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "The currency of Japan is?",
+                        new ArrayList<>(Arrays.asList("Yuan", "Yen", "Won", "Dollar")), "Yen", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What is the tallest mountain in the world?",
+                        new ArrayList<>(Arrays.asList("K2", "Everest", "Kangchenjunga", "Lhotse")), "Everest", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Who painted the Mona Lisa?",
+                        new ArrayList<>(Arrays.asList("Vincent Van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Claude Monet")), "Leonardo da Vinci", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which ocean is the largest?",
+                        new ArrayList<>(Arrays.asList("Atlantic", "Indian", "Arctic", "Pacific")), "Pacific", category));
                 break;
 
             case "Science":
-                questionList.add(new QuestionModel("H2O is chemical name for?",
-                        Arrays.asList("Hydrogen", "Oxygen", "Water", "Helium"), "Water", category));
-                questionList.add(new QuestionModel("Speed of light is approximately?",
-                        Arrays.asList("300,000 km/s", "150,000 km/s", "1,000 km/s", "10,000 km/s"), "300,000 km/s", category));
-                questionList.add(new QuestionModel("Which gas is most abundant in the Earth’s atmosphere?",
-                        Arrays.asList("Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"), "Nitrogen", category));
-                questionList.add(new QuestionModel("What planet is known as the Red Planet?",
-                        Arrays.asList("Venus", "Mars", "Jupiter", "Saturn"), "Mars", category));
-                questionList.add(new QuestionModel("What is the human body's largest organ?",
-                        Arrays.asList("Heart", "Liver", "Skin", "Kidney"), "Skin", category));
-                questionList.add(new QuestionModel("The process by which plants make food is called?",
-                        Arrays.asList("Photosynthesis", "Respiration", "Transpiration", "Fermentation"), "Photosynthesis", category));
-                questionList.add(new QuestionModel("Atomic number of Hydrogen is?",
-                        Arrays.asList("1", "2", "3", "4"), "1", category));
-                questionList.add(new QuestionModel("Sound travels fastest in?",
-                        Arrays.asList("Air", "Water", "Steel", "Vacuum"), "Steel", category));
-                questionList.add(new QuestionModel("What vitamin is produced when skin is exposed to sunlight?",
-                        Arrays.asList("Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"), "Vitamin D", category));
-                questionList.add(new QuestionModel("Which particle has a negative charge?",
-                        Arrays.asList("Proton", "Neutron", "Electron", "Photon"), "Electron", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "H2O is chemical name for?",
+                        new ArrayList<>(Arrays.asList("Hydrogen", "Oxygen", "Water", "Helium")), "Water", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Speed of light is approximately?",
+                        new ArrayList<>(Arrays.asList("300,000 km/s", "150,000 km/s", "1,000 km/s", "10,000 km/s")), "300,000 km/s", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which gas is most abundant in the Earth's atmosphere?",
+                        new ArrayList<>(Arrays.asList("Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen")), "Nitrogen", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What planet is known as the Red Planet?",
+                        new ArrayList<>(Arrays.asList("Venus", "Mars", "Jupiter", "Saturn")), "Mars", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What is the human body's largest organ?",
+                        new ArrayList<>(Arrays.asList("Heart", "Liver", "Skin", "Kidney")), "Skin", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "The process by which plants make food is called?",
+                        new ArrayList<>(Arrays.asList("Photosynthesis", "Respiration", "Transpiration", "Fermentation")), "Photosynthesis", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Atomic number of Hydrogen is?",
+                        new ArrayList<>(Arrays.asList("1", "2", "3", "4")), "1", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Sound travels fastest in?",
+                        new ArrayList<>(Arrays.asList("Air", "Water", "Steel", "Vacuum")), "Steel", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What vitamin is produced when skin is exposed to sunlight?",
+                        new ArrayList<>(Arrays.asList("Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D")), "Vitamin D", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which particle has a negative charge?",
+                        new ArrayList<>(Arrays.asList("Proton", "Neutron", "Electron", "Photon")), "Electron", category));
                 break;
 
             case "Sports":
-                questionList.add(new QuestionModel("How many players in a football team?",
-                        Arrays.asList("9", "10", "11", "12"), "11", category));
-                questionList.add(new QuestionModel("In which sport is the term 'home run' used?",
-                        Arrays.asList("Cricket", "Baseball", "Football", "Tennis"), "Baseball", category));
-                questionList.add(new QuestionModel("Which country won the first FIFA World Cup?",
-                        Arrays.asList("Brazil", "Germany", "Uruguay", "Italy"), "Uruguay", category));
-                questionList.add(new QuestionModel("The Olympics are held every how many years?",
-                        Arrays.asList("2", "3", "4", "5"), "4", category));
-                questionList.add(new QuestionModel("Which sport uses a shuttlecock?",
-                        Arrays.asList("Tennis", "Badminton", "Squash", "Table Tennis"), "Badminton", category));
-                questionList.add(new QuestionModel("In tennis, what is a score of zero called?",
-                        Arrays.asList("Love", "Zero", "Nil", "Duck"), "Love", category));
-                questionList.add(new QuestionModel("Michael Jordan was famous in which sport?",
-                        Arrays.asList("Football", "Basketball", "Baseball", "Golf"), "Basketball", category));
-                questionList.add(new QuestionModel("How many points is a touchdown worth in American football?",
-                        Arrays.asList("3", "6", "7", "1"), "6", category));
-                questionList.add(new QuestionModel("Which sport is known as the 'king of sports'?",
-                        Arrays.asList("Football", "Basketball", "Cricket", "Hockey"), "Football", category));
-                questionList.add(new QuestionModel("What color card is shown for a foul in soccer?",
-                        Arrays.asList("Red", "Blue", "Green", "Yellow"), "Red", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "How many players in a football team?",
+                        new ArrayList<>(Arrays.asList("9", "10", "11", "12")), "11", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "In which sport is the term 'home run' used?",
+                        new ArrayList<>(Arrays.asList("Cricket", "Baseball", "Football", "Tennis")), "Baseball", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which country won the first FIFA World Cup?",
+                        new ArrayList<>(Arrays.asList("Brazil", "Germany", "Uruguay", "Italy")), "Uruguay", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "The Olympics are held every how many years?",
+                        new ArrayList<>(Arrays.asList("2", "3", "4", "5")), "4", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which sport uses a shuttlecock?",
+                        new ArrayList<>(Arrays.asList("Tennis", "Badminton", "Squash", "Table Tennis")), "Badminton", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "In tennis, what is a score of zero called?",
+                        new ArrayList<>(Arrays.asList("Love", "Zero", "Nil", "Duck")), "Love", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Michael Jordan was famous in which sport?",
+                        new ArrayList<>(Arrays.asList("Football", "Basketball", "Baseball", "Golf")), "Basketball", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "How many points is a touchdown worth in American football?",
+                        new ArrayList<>(Arrays.asList("3", "6", "7", "1")), "6", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which sport is known as the 'king of sports'?",
+                        new ArrayList<>(Arrays.asList("Football", "Basketball", "Cricket", "Hockey")), "Football", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What color card is shown for a foul in soccer?",
+                        new ArrayList<>(Arrays.asList("Red", "Blue", "Green", "Yellow")), "Red", category));
                 break;
 
             case "Technology":
-                questionList.add(new QuestionModel("Android is developed by?",
-                        Arrays.asList("Apple", "Microsoft", "Google", "IBM"), "Google", category));
-                questionList.add(new QuestionModel("What does CPU stand for?",
-                        Arrays.asList("Central Process Unit", "Central Processing Unit", "Computer Personal Unit", "Central Processor Unit"), "Central Processing Unit", category));
-                questionList.add(new QuestionModel("HTML stands for?",
-                        Arrays.asList("HyperText Markup Language", "HyperText Makeup Language", "HyperText Mark Language", "HyperText Markdown Language"), "HyperText Markup Language", category));
-                questionList.add(new QuestionModel("Which company created the iPhone?",
-                        Arrays.asList("Apple", "Samsung", "Nokia", "Sony"), "Apple", category));
-                questionList.add(new QuestionModel("RAM stands for?",
-                        Arrays.asList("Random Access Memory", "Read Access Memory", "Run Access Memory", "Random Actual Memory"), "Random Access Memory", category));
-                questionList.add(new QuestionModel("What is the main language used for Android development?",
-                        Arrays.asList("Java", "Python", "Swift", "Kotlin"), "Kotlin", category));
-                questionList.add(new QuestionModel("What does USB stand for?",
-                        Arrays.asList("Universal Serial Bus", "Universal Service Bus", "Unified Serial Bus", "Universal System Bus"), "Universal Serial Bus", category));
-                questionList.add(new QuestionModel("Which protocol is used to send emails?",
-                        Arrays.asList("HTTP", "SMTP", "FTP", "POP3"), "SMTP", category));
-                questionList.add(new QuestionModel("The first electronic computer was called?",
-                        Arrays.asList("ENIAC", "UNIVAC", "EDSAC", "ABC"), "ENIAC", category));
-                questionList.add(new QuestionModel("What is an IP address used for?",
-                        Arrays.asList("Identifying a device on the internet", "Locating a file", "Programming a device", "Managing software"), "Identifying a device on the internet", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Android is developed by?",
+                        new ArrayList<>(Arrays.asList("Apple", "Microsoft", "Google", "IBM")), "Google", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What does CPU stand for?",
+                        new ArrayList<>(Arrays.asList("Central Process Unit", "Central Processing Unit", "Computer Personal Unit", "Central Processor Unit")), "Central Processing Unit", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "HTML stands for?",
+                        new ArrayList<>(Arrays.asList("HyperText Markup Language", "HyperText Makeup Language", "HyperText Mark Language", "HyperText Markdown Language")), "HyperText Markup Language", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which company created the iPhone?",
+                        new ArrayList<>(Arrays.asList("Apple", "Samsung", "Nokia", "Sony")), "Apple", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "RAM stands for?",
+                        new ArrayList<>(Arrays.asList("Random Access Memory", "Read Access Memory", "Run Access Memory", "Random Actual Memory")), "Random Access Memory", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What is the main language used for Android development?",
+                        new ArrayList<>(Arrays.asList("Java", "Python", "Swift", "Kotlin")), "Kotlin", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What does USB stand for?",
+                        new ArrayList<>(Arrays.asList("Universal Serial Bus", "Universal Service Bus", "Unified Serial Bus", "Universal System Bus")), "Universal Serial Bus", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Which protocol is used to send emails?",
+                        new ArrayList<>(Arrays.asList("HTTP", "SMTP", "FTP", "POP3")), "SMTP", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "The first electronic computer was called?",
+                        new ArrayList<>(Arrays.asList("ENIAC", "UNIVAC", "EDSAC", "ABC")), "ENIAC", category));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "What is an IP address used for?",
+                        new ArrayList<>(Arrays.asList("Identifying a device on the internet", "Locating a file", "Programming a device", "Managing software")), "Identifying a device on the internet", category));
                 break;
 
             default:
-                questionList.add(new QuestionModel("Sample Question?",
-                        Arrays.asList("A", "B", "C", "D"), "A", "Default"));
+                questionList.add(QuestionFactory.createQuestion("MCQ", "Sample Question?",
+                        new ArrayList<>(Arrays.asList("A", "B", "C", "D")), "A", "Default"));
                 break;
         }
     }
@@ -211,6 +249,7 @@ public class PlayActivity extends AppCompatActivity {
         resetOptionColors();
         btnNext.setEnabled(false);
         selectedAnswer = "";
+        questionStartTime = System.currentTimeMillis(); // Start timing for this question
 
         QuestionModel currentQuestion = questionList.get(currentQuestionIndex);
 
@@ -219,24 +258,51 @@ public class PlayActivity extends AppCompatActivity {
 
         progressBar.setProgressCompat((currentQuestionIndex + 1) * 100 / questionList.size(), true);
 
-        btnOption1.setText(currentQuestion.getOptions().get(0));
-        btnOption2.setText(currentQuestion.getOptions().get(1));
-        btnOption3.setText(currentQuestion.getOptions().get(2));
-        btnOption4.setText(currentQuestion.getOptions().get(3));
+        // Handle different question types polymorphically
+        if (currentQuestion instanceof MCQQuestion) {
+            MCQQuestion mcqQuestion = (MCQQuestion) currentQuestion;
+            btnOption1.setText(mcqQuestion.getOptions().get(0));
+            btnOption2.setText(mcqQuestion.getOptions().get(1));
+            btnOption3.setText(mcqQuestion.getOptions().get(2));
+            btnOption4.setText(mcqQuestion.getOptions().get(3));
+
+            // Make sure option buttons are visible
+            setOptionButtonsVisibility(true);
+        } else {
+            // Handle other question types (TrueFalse, FillBlank)
+            // For now, hide option buttons for non-MCQ questions
+            setOptionButtonsVisibility(false);
+        }
     }
 
     private void checkAnswerAndShowColors() {
-        String correctAnswer = questionList.get(currentQuestionIndex).getCorrectAnswer();
+        QuestionModel currentQuestion = questionList.get(currentQuestionIndex);
+        String correctAnswer = currentQuestion.getCorrectAnswer();
+        boolean isCorrect = selectedAnswer.equals(correctAnswer);
+
+        // Calculate time taken for this question (for timed mode)
+        long timeTaken = System.currentTimeMillis() - questionStartTime;
 
         resetOptionColors();
+        colorOptionButton(correctAnswer, ContextCompat.getColor(this, R.color.correct_color));
 
-        colorOptionButton(correctAnswer, getResources().getColor(R.color.correct_color));
-
-        if (!selectedAnswer.equals(correctAnswer)) {
-            colorOptionButton(selectedAnswer, getResources().getColor(R.color.wrong_color));
-        } else {
-            score++;
+        if (!isCorrect) {
+            colorOptionButton(selectedAnswer, ContextCompat.getColor(this, R.color.wrong_color));
         }
+
+        // Use scoring strategy instead of simple increment
+        int pointsEarned = scoringStrategy.calculateScore(isCorrect, (int) timeTaken);
+        score += pointsEarned;
+
+        // Show points earned for this question
+        showPointsEarned(pointsEarned, isCorrect);
+    }
+
+    private void showPointsEarned(int points, boolean isCorrect) {
+        String message = isCorrect ?
+                "Correct! +" + points + " points" :
+                "Wrong! +" + points + " points";
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void colorOptionButton(String answerText, int color) {
@@ -258,8 +324,16 @@ public class PlayActivity extends AppCompatActivity {
         btnOption4.setEnabled(enabled);
     }
 
+    private void setOptionButtonsVisibility(boolean visible) {
+        int visibility = visible ? android.view.View.VISIBLE : android.view.View.GONE;
+        btnOption1.setVisibility(visibility);
+        btnOption2.setVisibility(visibility);
+        btnOption3.setVisibility(visibility);
+        btnOption4.setVisibility(visibility);
+    }
+
     private void resetOptionColors() {
-        int defaultColor = getResources().getColor(android.R.color.transparent);
+        int defaultColor = ContextCompat.getColor(this, android.R.color.transparent);
         btnOption1.setBackgroundColor(defaultColor);
         btnOption2.setBackgroundColor(defaultColor);
         btnOption3.setBackgroundColor(defaultColor);

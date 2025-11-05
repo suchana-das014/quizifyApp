@@ -3,7 +3,7 @@ package com.example.quizio.strategies;
 public class TimedMode implements ScoringStrategy {
     private long timeTaken;
 
-    public TimedMode(long timeTaken) {
+    public TimedMode() {
         this.timeTaken = timeTaken;
     }
 
