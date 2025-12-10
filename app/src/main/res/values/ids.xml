@@ -22,4 +22,5 @@
     <item name="btnCategoryScience" type="id" />
     <item name="btnCategorySports" type="id" />
     <item name="btnCategoryTech" type="id" />
+    <item name="btnCompositeDemo" type="id" />
 </resources>
