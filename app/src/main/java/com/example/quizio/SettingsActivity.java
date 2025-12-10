@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -18,10 +17,9 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
 
         prefs = getSharedPreferences("quiz_prefs", MODE_PRIVATE);
-
-        setContentView(R.layout.activity_settings);
 
         buttonAddQuestion = findViewById(R.id.buttonAddQuestion);
         buttonResetScore = findViewById(R.id.buttonResetScore);

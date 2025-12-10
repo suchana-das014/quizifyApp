@@ -7,6 +7,16 @@
     android:orientation="vertical"
     android:padding="32dp">
 
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quiz Results"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="40dp" />
+
     <!-- Your Score -->
     <TextView
         android:id="@+id/tvScore"
@@ -16,6 +26,16 @@
         android:textColor="#2196F3"
         android:textSize="32sp"
         android:textStyle="bold"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Performance Message -->
+    <TextView
+        android:id="@+id/tvPerformance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Great Job!"
+        android:textSize="20sp"
+        android:textColor="#4CAF50"
         android:layout_marginBottom="40dp" />
 
     <!-- Best Score -->
@@ -24,10 +44,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Best Score: 0/10"
-        android:textColor="#4CAF50"
+        android:textColor="#FF9800"
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginBottom="60dp" />
+
+    <!-- Back to Categories Button -->
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Back to Categories"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#9C27B0"
+        android:layout_marginBottom="20dp" />
 
     <!-- Restart Button -->
     <Button

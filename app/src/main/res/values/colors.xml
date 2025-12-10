@@ -1,9 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_color">#1E88E5</color>
-    <color name="primary_dark">#1565C0</color>
-    <color name="accent_color">#FF4081</color>
+    <!-- Primary Colors (for your buttons) -->
+    <color name="primary_color">#FF6200EE</color>     <!-- Purple color for buttons -->
+    <color name="primary_dark">#FF3700B3</color>      <!-- Darker purple for ripple effect -->
+
+    <!-- Your original colors -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Quiz Colors -->
+    <color name="accent_color">#FF6200EE</color>
     <color name="correct_color">#4CAF50</color>
-    <color name="wrong_color">#F44336</color>
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <color name="wrong_color">#F44336</color>         <!-- Red color for Exit button -->
+    <color name="progress_foreground">#FF6200EE</color>
+    <color name="progress_background">#E0E0E0</color>
+
+    <!-- Theme Colors -->
+    <color name="background_color">#FFFFFF</color>
+    <color name="card_background">#F5F5F5</color>
 </resources>
