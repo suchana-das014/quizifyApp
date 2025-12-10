@@ -182,7 +182,6 @@ public class PlayActivity extends AppCompatActivity {
             colorOptionButton(selectedAnswer, ContextCompat.getColor(this, R.color.wrong_color));
         }
 
-        // এখানে +1 পয়েন্ট!
         if (isCorrect) {
             score++;
             Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();

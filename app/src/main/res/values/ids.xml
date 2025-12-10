@@ -23,4 +23,8 @@
     <item name="btnCategorySports" type="id" />
     <item name="btnCategoryTech" type="id" />
     <item name="btnCompositeDemo" type="id" />
+    <item name="btnUndo" type="id" />
+    <item name="btnRedo" type="id" />
+    <item name="btnFlag" type="id" />
+    <item name="btnSkip" type="id" />
 </resources>
