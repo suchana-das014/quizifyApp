@@ -5,13 +5,14 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+import com.example.quizio.facade.GameFacade;
 import com.example.quizio.models.MCQQuestion;
 import com.example.quizio.models.QuestionModel;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class PlayActivity extends AppCompatActivity {
 
@@ -19,19 +20,19 @@ public class PlayActivity extends AppCompatActivity {
     private Button btnOption1, btnOption2, btnOption3, btnOption4, btnNext, btnBack;
     private LinearProgressIndicator progressBar;
 
-    private ArrayList<QuestionModel> questionList;
-    private int currentQuestionIndex = 0;
-    private int score = 0;
-    private String selectedAnswer = "";
-    private String category = "General Knowledge";
+    private GameFacade gameFacade;
+
     private boolean answered = false;
+    private String selectedAnswer = "";
+
+    private String category, gameMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
-        // Bind views
+        // Bind UI components
         tvQuestionCounter = findViewById(R.id.tvQuestionCounter);
         tvQuestion = findViewById(R.id.tvQuestion);
         btnOption1 = findViewById(R.id.btnOption1);
@@ -44,23 +45,29 @@ public class PlayActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        // Get category only
+        // Get data from intent extras
         category = getIntent().getStringExtra("category");
+        gameMode = getIntent().getStringExtra("gameMode");
+
         if (category == null || category.isEmpty()) category = "General Knowledge";
+        if (gameMode == null || gameMode.isEmpty()) gameMode = "normal";
 
-        loadQuestions(category);
+        // Initialize Facade and load questions
+        gameFacade = new GameFacade(gameMode);
+        gameFacade.loadQuestions(category);
 
-        if (questionList.isEmpty()) {
-            Toast.makeText(this, "No questions loaded!", Toast.LENGTH_LONG).show();
+        // Safety: if there are no questions, finish gracefully
+        if (gameFacade.getTotalQuestions() == 0) {
+            Toast.makeText(this, "No questions available.", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
         showQuestion();
 
-        // Option selection
-        Button[] options = {btnOption1, btnOption2, btnOption3, btnOption4};
-        for (Button btn : options) {
+        // Option button listeners
+        Button[] optionButtons = {btnOption1, btnOption2, btnOption3, btnOption4};
+        for (Button btn : optionButtons) {
             btn.setOnClickListener(v -> {
                 if (answered) return;
                 selectedAnswer = btn.getText().toString();
@@ -70,28 +77,31 @@ public class PlayActivity extends AppCompatActivity {
             });
         }
 
-        // Next button logic
+        // Next / Submit button logic
         btnNext.setOnClickListener(v -> {
             if (!answered) {
                 if (selectedAnswer.isEmpty()) return;
 
                 checkAnswerAndShowColors();
                 answered = true;
-                btnNext.setText(currentQuestionIndex == questionList.size() - 1 ? "Finish" : "Next Question");
+
+                btnNext.setText(gameFacade.hasNext() ? "Next Question" : "Finish");
                 setOptionsEnabled(false);
+
             } else {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < questionList.size()) {
+                if (gameFacade.hasNext()) {
+                    gameFacade.moveToNext();
                     showQuestion();
                     answered = false;
-                    selectedAnswer = "";
                     btnNext.setText("Submit");
                     setOptionsEnabled(true);
+
                 } else {
-                    // Go to Result
+                    // End of quiz -> go to results
                     Intent intent = new Intent(this, ResultActivity.class);
-                    intent.putExtra("score", score);
-                    intent.putExtra("total", questionList.size());
+                    intent.putExtra("score", gameFacade.getScore());
+                    intent.putExtra("total", gameFacade.getTotalQuestions());
+                    intent.putExtra("gameMode", gameMode);
                     intent.putExtra("category", category);
                     startActivity(intent);
                     finish();
@@ -100,102 +110,115 @@ public class PlayActivity extends AppCompatActivity {
         });
     }
 
-    private void loadQuestions(String category) {
-        questionList = new ArrayList<>();
-
-        if (category.equals("General Knowledge")) {
-            questionList.add(new MCQQuestion("Capital of France?", new ArrayList<>(Arrays.asList("Paris", "London", "Berlin", "Madrid")), "Paris", category));
-            questionList.add(new MCQQuestion("Largest planet?", new ArrayList<>(Arrays.asList("Earth", "Jupiter", "Saturn", "Mars")), "Jupiter", category));
-            questionList.add(new MCQQuestion("Who wrote 'Romeo and Juliet'?", new ArrayList<>(Arrays.asList("Shakespeare", "Dickens", "Twain", "Austen")), "Shakespeare", category));
-            questionList.add(new MCQQuestion("Currency of Japan?", new ArrayList<>(Arrays.asList("Yuan", "Yen", "Won", "Rupee")), "Yen", category));
-            questionList.add(new MCQQuestion("Tallest mountain?", new ArrayList<>(Arrays.asList("K2", "Everest", "Kangchenjunga", "Lhotse")), "Everest", category));
-            questionList.add(new MCQQuestion("How many continents?", new ArrayList<>(Arrays.asList("5", "6", "7", "8")), "7", category));
-            questionList.add(new MCQQuestion("Biggest ocean?", new ArrayList<>(Arrays.asList("Atlantic", "Indian", "Arctic", "Pacific")), "Pacific", category));
-            questionList.add(new MCQQuestion("Inventor of telephone?", new ArrayList<>(Arrays.asList("Edison", "Bell", "Tesla", "Einstein")), "Bell", category));
-            questionList.add(new MCQQuestion("Color of emerald?", new ArrayList<>(Arrays.asList("Red", "Blue", "Green", "Yellow")), "Green", category));
-            questionList.add(new MCQQuestion("Smallest prime number?", new ArrayList<>(Arrays.asList("0", "1", "2", "3")), "2", category));
-        }
-        else if (category.equals("Science")) {
-            questionList.add(new MCQQuestion("Chemical symbol for water?", new ArrayList<>(Arrays.asList("O2", "H2O", "CO2", "NaCl")), "H2O", category));
-            questionList.add(new MCQQuestion("Speed of light?", new ArrayList<>(Arrays.asList("300,000 km/s", "150,000 km/s", "500,000 km/s", "100,000 km/s")), "300,000 km/s", category));
-            questionList.add(new MCQQuestion("Red planet?", new ArrayList<>(Arrays.asList("Venus", "Mars", "Jupiter", "Saturn")), "Mars", category));
-            questionList.add(new MCQQuestion("Largest organ in human body?", new ArrayList<>(Arrays.asList("Heart", "Brain", "Skin", "Liver")), "Skin", category));
-            questionList.add(new MCQQuestion("Photosynthesis makes?", new ArrayList<>(Arrays.asList("Oxygen", "Carbon", "Nitrogen", "Hydrogen")), "Oxygen", category));
-            questionList.add(new MCQQuestion("Atomic number of Hydrogen?", new ArrayList<>(Arrays.asList("1", "2", "3", "4")), "1", category));
-            questionList.add(new MCQQuestion("Sound fastest in?", new ArrayList<>(Arrays.asList("Air", "Water", "Steel", "Vacuum")), "Steel", category));
-            questionList.add(new MCQQuestion("Vitamin from sunlight?", new ArrayList<>(Arrays.asList("A", "B", "C", "D")), "D", category));
-            questionList.add(new MCQQuestion("DNA stands for?", new ArrayList<>(Arrays.asList("Deoxyribonucleic Acid", "Data Nucleic Acid", "Double Nucleic Acid", "None")), "Deoxyribonucleic Acid", category));
-            questionList.add(new MCQQuestion("Unit of force?", new ArrayList<>(Arrays.asList("Joule", "Watt", "Newton", "Pascal")), "Newton", category));
-        }
-        else if (category.equals("Sports")) {
-            questionList.add(new MCQQuestion("Players in football team?", new ArrayList<>(Arrays.asList("9", "10", "11", "12")), "11", category));
-            questionList.add(new MCQQuestion("Home run is used in?", new ArrayList<>(Arrays.asList("Cricket", "Baseball", "Football", "Hockey")), "Baseball", category));
-            questionList.add(new MCQQuestion("Olympics every how many years?", new ArrayList<>(Arrays.asList("2", "3", "4", "5")), "4", category));
-            questionList.add(new MCQQuestion("Shuttlecock used in?", new ArrayList<>(Arrays.asList("Tennis", "Badminton", "Squash", "Golf")), "Badminton", category));
-            questionList.add(new MCQQuestion("Zero score in tennis?", new ArrayList<>(Arrays.asList("Nil", "Love", "Duck", "Zero")), "Love", category));
-            questionList.add(new MCQQuestion("Michael Jordan played?", new ArrayList<>(Arrays.asList("Football", "Basketball", "Baseball", "Tennis")), "Basketball", category));
-            questionList.add(new MCQQuestion("FIFA World Cup first won by?", new ArrayList<>(Arrays.asList("Brazil", "Germany", "Uruguay", "Italy")), "Uruguay", category));
-            questionList.add(new MCQQuestion("Cricket World Cup 2023 winner?", new ArrayList<>(Arrays.asList("India", "England", "Australia", "New Zealand")), "Australia", category));
-            questionList.add(new MCQQuestion("Wimbledon is for?", new ArrayList<>(Arrays.asList("Football", "Cricket", "Tennis", "Golf")), "Tennis", category));
-            questionList.add(new MCQQuestion("Fastest man on earth?", new ArrayList<>(Arrays.asList("Bolt", "Gatlin", "Blake", "Powell")), "Bolt", category));
-        }
-        else if (category.equals("Technology")) {
-            questionList.add(new MCQQuestion("Android developed by?", new ArrayList<>(Arrays.asList("Apple", "Microsoft", "Google", "Amazon")), "Google", category));
-            questionList.add(new MCQQuestion("CPU stands for?", new ArrayList<>(Arrays.asList("Central Processing Unit", "Computer Processing Unit", "Central Power Unit", "Core Processing Unit")), "Central Processing Unit", category));
-            questionList.add(new MCQQuestion("HTML is for?", new ArrayList<>(Arrays.asList("Styling", "Structure", "Behavior", "Database")), "Structure", category));
-            questionList.add(new MCQQuestion("iPhone made by?", new ArrayList<>(Arrays.asList("Samsung", "Apple", "Nokia", "OnePlus")), "Apple", category));
-            questionList.add(new MCQQuestion("RAM stands for?", new ArrayList<>(Arrays.asList("Read Access Memory", "Random Access Memory", "Run Access Memory", "Real Access Memory")), "Random Access Memory", category));
-            questionList.add(new MCQQuestion("Main language for Android now?", new ArrayList<>(Arrays.asList("Java", "Kotlin", "Dart", "Swift")), "Kotlin", category));
-            questionList.add(new MCQQuestion("USB stands for?", new ArrayList<>(Arrays.asList("Universal Serial Bus", "United Serial Bus", "Universal System Bus", "None")), "Universal Serial Bus", category));
-            questionList.add(new MCQQuestion("Inventor of WWW?", new ArrayList<>(Arrays.asList("Bill Gates", "Tim Berners-Lee", "Steve Jobs", "Elon Musk")), "Tim Berners-Lee", category));
-            questionList.add(new MCQQuestion("Bitcoin is a?", new ArrayList<>(Arrays.asList("Stock", "Cryptocurrency", "Bond", "Fiat")), "Cryptocurrency", category));
-            questionList.add(new MCQQuestion("AI stands for?", new ArrayList<>(Arrays.asList("Artificial Intelligence", "Automated Intelligence", "Advanced Internet", "None")), "Artificial Intelligence", category));
-        }
-    }
-
     private void showQuestion() {
         resetOptionColors();
         btnNext.setEnabled(false);
         selectedAnswer = "";
-        answered = false;
 
-        QuestionModel q = questionList.get(currentQuestionIndex);
-        tvQuestion.setText(q.getQuestion());
-        tvQuestionCounter.setText((currentQuestionIndex + 1) + "/" + questionList.size());
-        progressBar.setProgressCompat((currentQuestionIndex + 1) * 100 / questionList.size(), true);
+        // Get current question from facade (may be null if facade not properly populated)
+        QuestionModel currentQuestion = gameFacade.getCurrentQuestion();
+        if (currentQuestion == null) {
+            // Something went wrong: bail out instead of crashing
+            Toast.makeText(this, "Unable to load question.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
-        if (q instanceof MCQQuestion) {
-            MCQQuestion mcq = (MCQQuestion) q;
-            btnOption1.setText(mcq.getOptions().get(0));
-            btnOption2.setText(mcq.getOptions().get(1));
-            btnOption3.setText(mcq.getOptions().get(2));
-            btnOption4.setText(mcq.getOptions().get(3));
+        // Update counters and progress safely (avoid divide by zero)
+        int total = gameFacade.getTotalQuestions();
+        int index = gameFacade.getCurrentIndex();
+        if (total <= 0) total = 1; // avoid division by zero
+
+        tvQuestionCounter.setText(index + "/" + gameFacade.getTotalQuestions());
+
+        // Use non-animated update to reduce chance of UI stalls
+        int progressValue = index * 100 / total;
+        try {
+            progressBar.setProgress(progressValue);
+        } catch (Exception e) {
+            // If progress indicator causes layout/animation issues on some devices,
+            // ignore and continue (prevents freeze).
+            e.printStackTrace();
+        }
+
+        // Note: use getQuestion() (your original model used this name). If your model
+        // uses a different getter (like getQuestionText()), change it accordingly.
+        String questionText;
+        try {
+            questionText = currentQuestion.getQuestion();
+        } catch (NoSuchMethodError | Exception ex) {
+            // fallback if your model uses a different method name
+            try {
+                questionText = (String) currentQuestion.getClass().getMethod("getQuestionText").invoke(currentQuestion);
+            } catch (Exception e) {
+                questionText = "Question";
+            }
+        }
+        tvQuestion.setText(questionText);
+
+        if (currentQuestion instanceof MCQQuestion) {
+            MCQQuestion mcq = (MCQQuestion) currentQuestion;
+
+            // Guard against malformed option lists
+            if (mcq.getOptions() != null && mcq.getOptions().size() >= 4) {
+                btnOption1.setText(mcq.getOptions().get(0));
+                btnOption2.setText(mcq.getOptions().get(1));
+                btnOption3.setText(mcq.getOptions().get(2));
+                btnOption4.setText(mcq.getOptions().get(3));
+            } else {
+                // If options are missing, disable option buttons to avoid crashes
+                btnOption1.setText("-");
+                btnOption2.setText("-");
+                btnOption3.setText("-");
+                btnOption4.setText("-");
+                setOptionsEnabled(false);
+            }
+
+            setOptionButtonsVisibility(true);
+
+        } else {
+            // non-MCQ question type: hide option buttons (but don't trigger heavy relayouts)
+            setOptionButtonsVisibility(false);
         }
     }
+
     private void checkAnswerAndShowColors() {
-        QuestionModel q = questionList.get(currentQuestionIndex);
-        boolean isCorrect = q.checkAnswer(selectedAnswer);
+        QuestionModel question = gameFacade.getCurrentQuestion();
+        if (question == null) {
+            Toast.makeText(this, "Question missing.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String correctAnswer = question.getCorrectAnswer();
+
+        int pointsEarned = gameFacade.submitAnswer(selectedAnswer);
+        boolean isCorrect = pointsEarned > 0;
 
         resetOptionColors();
-        colorOptionButton(q.getCorrectAnswer(), ContextCompat.getColor(this, R.color.correct_color));
-        if (!isCorrect) {
+
+        // color correct option
+        colorOptionButton(correctAnswer, ContextCompat.getColor(this, R.color.correct_color));
+
+        // color selected wrong option
+        if (!isCorrect && selectedAnswer != null && !selectedAnswer.isEmpty()) {
             colorOptionButton(selectedAnswer, ContextCompat.getColor(this, R.color.wrong_color));
         }
 
-        // এখানে +1 পয়েন্ট!
-        if (isCorrect) {
-            score++;
-            Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show();
-        }
+        Toast.makeText(this,
+                (isCorrect ? "Correct +" : "Wrong +") + pointsEarned + " points",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
-    private void colorOptionButton(String text, int color) {
-        if (btnOption1.getText().toString().equals(text)) btnOption1.setBackgroundColor(color);
-        if (btnOption2.getText().toString().equals(text)) btnOption2.setBackgroundColor(color);
-        if (btnOption3.getText().toString().equals(text)) btnOption3.setBackgroundColor(color);
-        if (btnOption4.getText().toString().equals(text)) btnOption4.setBackgroundColor(color);
+    private void colorOptionButton(String answer, int color) {
+        if (answer == null) return;
+        if (btnOption1.getText() != null && btnOption1.getText().toString().equals(answer))
+            btnOption1.setBackgroundColor(color);
+        if (btnOption2.getText() != null && btnOption2.getText().toString().equals(answer))
+            btnOption2.setBackgroundColor(color);
+        if (btnOption3.getText() != null && btnOption3.getText().toString().equals(answer))
+            btnOption3.setBackgroundColor(color);
+        if (btnOption4.getText() != null && btnOption4.getText().toString().equals(answer))
+            btnOption4.setBackgroundColor(color);
     }
 
     private void setOptionsEnabled(boolean enabled) {
@@ -205,11 +228,19 @@ public class PlayActivity extends AppCompatActivity {
         btnOption4.setEnabled(enabled);
     }
 
+    private void setOptionButtonsVisibility(boolean visible) {
+        int visibility = visible ? android.view.View.VISIBLE : android.view.View.GONE;
+        btnOption1.setVisibility(visibility);
+        btnOption2.setVisibility(visibility);
+        btnOption3.setVisibility(visibility);
+        btnOption4.setVisibility(visibility);
+    }
+
     private void resetOptionColors() {
-        int trans = ContextCompat.getColor(this, android.R.color.transparent);
-        btnOption1.setBackgroundColor(trans);
-        btnOption2.setBackgroundColor(trans);
-        btnOption3.setBackgroundColor(trans);
-        btnOption4.setBackgroundColor(trans);
+        int defaultColor = ContextCompat.getColor(this, android.R.color.transparent);
+        btnOption1.setBackgroundColor(defaultColor);
+        btnOption2.setBackgroundColor(defaultColor);
+        btnOption3.setBackgroundColor(defaultColor);
+        btnOption4.setBackgroundColor(defaultColor);
     }
 }

@@ -7,7 +7,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class CategoryActivity extends AppCompatActivity {
-//buttons
+
     private Button btnGK, btnScience, btnSports, btnTech;
 
     @Override
@@ -28,7 +28,7 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void startQuiz(String category) {
         Intent intent = new Intent(CategoryActivity.this, PlayActivity.class);
-        intent.putExtra("category", category);
+        intent.putExtra("category", category);  // only category
         startActivity(intent);
     }
 }
