@@ -4,36 +4,52 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:gravity="center"
-    android:orientation="horizontal"
-    android:padding="24dp">
+    android:orientation="vertical"
+    android:padding="32dp">
 
+    <!-- Your Score -->
     <TextView
         android:id="@+id/tvScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
         android:text="Your Score: 0 / 10"
-        android:textColor="@color/primary_color"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textColor="#2196F3"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="40dp" />
 
+    <!-- Best Score -->
+    <TextView
+        android:id="@+id/tvHighScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Best Score: 0/10"
+        android:textColor="#4CAF50"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="60dp" />
+
+    <!-- Restart Button -->
     <Button
         android:id="@+id/btnRestart"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/primary_color"
-        android:text="Restart"
+        android:layout_height="60dp"
+        android:text="Play Again"
+        android:textSize="18sp"
+        android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:textStyle="bold" />
+        android:backgroundTint="#2196F3"
+        android:layout_marginBottom="20dp" />
 
+    <!-- Exit Button -->
     <Button
         android:id="@+id/btnExit"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/wrong_color"
+        android:layout_height="60dp"
         android:text="Exit"
+        android:textSize="18sp"
+        android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:textStyle="bold" />
+        android:backgroundTint="#F44336" />
 
 </LinearLayout>

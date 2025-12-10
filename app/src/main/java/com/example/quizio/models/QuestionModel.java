@@ -12,7 +12,7 @@ public abstract class QuestionModel {
         this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.category = category;
-        this.score = 0;
+        this.score = 0; // Default score, can be set by scoring strategy
     }
 
     public QuestionModel(String questionText, String correctAnswer, String category, int score) {
@@ -32,7 +32,7 @@ public abstract class QuestionModel {
 
     public abstract boolean checkAnswer(String userAnswer);
 
-
+    // Getters
     public String getQuestionText() {
         return questionText;
     }

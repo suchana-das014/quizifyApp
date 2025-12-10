@@ -10,10 +10,10 @@ public class QuestionFactory {
             case "MCQ":
                 return new MCQQuestion(question, options, correctAnswer, category);
             case "TrueFalse":
-
+                // For TrueFalse questions, we don't need the options parameter
                 return new TrueFalseQuestion(question, correctAnswer, category);
             case "FillBlank":
-
+                // For FillBlank questions, we don't need the options parameter
                 return new FillBlankQuestion(question, correctAnswer, category);
             default:
                 throw new IllegalArgumentException("Unknown question type: " + type);

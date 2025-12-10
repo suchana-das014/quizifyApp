@@ -1,27 +1,20 @@
 package com.example.quizio.models;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class TrueFalseQuestion extends QuestionModel {
-    private boolean correctAnswer;
-
-    public TrueFalseQuestion(String questionText, boolean correctAnswer, int score) {
-        super(questionText, score);
-        this.correctAnswer = correctAnswer;
-    }
-
-    public TrueFalseQuestion(String question, String correctAnswer, String category) {
-
+    public TrueFalseQuestion(String questionText, String correctAnswer, String category) {
+        super(questionText, correctAnswer, category);
     }
 
     @Override
     public boolean checkAnswer(String userAnswer) {
-        return Boolean.parseBoolean(userAnswer) == correctAnswer;
+        return correctAnswer.equalsIgnoreCase(userAnswer.trim());
     }
 
     @Override
     public List<String> getOptions() {
-        return Collections.emptyList();
+        return Arrays.asList("True", "False");
     }
 }

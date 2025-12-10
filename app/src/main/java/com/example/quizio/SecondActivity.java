@@ -3,7 +3,6 @@ package com.example.quizio;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SecondActivity extends AppCompatActivity {
@@ -19,8 +18,9 @@ public class SecondActivity extends AppCompatActivity {
         buttonSettings = findViewById(R.id.buttonSettings);
         buttonExit = findViewById(R.id.buttonExit);
 
+        // FIXED: Go to CategoryActivity instead of PlayActivity directly
         buttonPlay.setOnClickListener(v -> {
-            Intent intent = new Intent(SecondActivity.this, PlayActivity.class);
+            Intent intent = new Intent(SecondActivity.this, CategoryActivity.class);
             startActivity(intent);
         });
 
@@ -29,8 +29,6 @@ public class SecondActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        buttonExit.setOnClickListener(v -> {
-            finishAffinity(); // close app
-        });
+        buttonExit.setOnClickListener(v -> finishAffinity());
     }
 }

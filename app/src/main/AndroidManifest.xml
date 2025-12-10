@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Required permission for internet access (needed for Firebase or online features) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -27,6 +26,9 @@
 
         <!-- Settings Activity -->
         <activity android:name=".SettingsActivity" android:exported="true" />
+
+        <!-- Second Activity -->
+        <activity android:name=".SecondActivity" android:exported="true" />
 
         <!-- Main Launcher Activity -->
         <activity android:name=".MainActivity" android:exported="true">
