@@ -188,26 +188,28 @@ public class PlayActivity extends AppCompatActivity {
             Toast.makeText(this, "Question missing.", Toast.LENGTH_SHORT).show();
             return;
         }
-        String correctAnswer = question.getCorrectAnswer();
 
-        int pointsEarned = gameFacade.submitAnswer(selectedAnswer);
+        // Normalize strings
+        String correctAnswer = question.getCorrectAnswer().trim();
+        int pointsEarned = gameFacade.submitAnswer(selectedAnswer.trim());
         boolean isCorrect = pointsEarned > 0;
 
         resetOptionColors();
 
-        // color correct option
+        // Color the correct option green
         colorOptionButton(correctAnswer, ContextCompat.getColor(this, R.color.correct_color));
 
-        // color selected wrong option
+        // If user was wrong, color their selection red
         if (!isCorrect && selectedAnswer != null && !selectedAnswer.isEmpty()) {
-            colorOptionButton(selectedAnswer, ContextCompat.getColor(this, R.color.wrong_color));
+            colorOptionButton(selectedAnswer.trim(), ContextCompat.getColor(this, R.color.wrong_color));
         }
 
         Toast.makeText(this,
-                (isCorrect ? "Correct +" : "Wrong +") + pointsEarned + " points",
+                (isCorrect ? "Correct +1 point" : "Wrong +0 points"),
                 Toast.LENGTH_SHORT
         ).show();
     }
+
 
     private void colorOptionButton(String answer, int color) {
         if (answer == null) return;

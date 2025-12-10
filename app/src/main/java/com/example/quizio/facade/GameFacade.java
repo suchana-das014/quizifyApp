@@ -7,12 +7,13 @@ import com.example.quizio.strategies.HardMode;
 import com.example.quizio.strategies.NormalMode;
 import com.example.quizio.strategies.ScoringStrategy;
 import com.example.quizio.strategies.TimedMode;
-
+import com.example.quizio.memento.GameStateMemento;
+import com.example.quizio.observer.GameSubject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class GameFacade {
+public class GameFacade extends GameSubject {
 
     private List<QuestionModel> questions = new ArrayList<>();
     private int currentQuestionIndex = 0;
@@ -175,16 +176,33 @@ public class GameFacade {
     // -------------------- ANSWER HANDLING ---------------------
 
     public int submitAnswer(String userAnswer) {
-
         QuestionModel question = questions.get(currentQuestionIndex);
-        boolean isCorrect = question.getCorrectAnswer().equals(userAnswer);
+        if (question == null || userAnswer == null) return 0;
 
-        long timeTaken = System.currentTimeMillis() - questionStartTime;
+        // Normalize strings to avoid mismatch
+        boolean isCorrect = question.getCorrectAnswer().trim().equalsIgnoreCase(userAnswer.trim());
 
-        int points = scoringStrategy.calculateScore(isCorrect, (int) timeTaken);
+        int points = isCorrect ? 1 : 0;  // 1 point for correct answer
         score += points;
 
         return points;
+    }
+
+
+    // ------------------ MEMENTO SUPPORT ------------------
+
+    public GameStateMemento saveState() {
+        return new GameStateMemento(currentQuestionIndex, score, questions);
+    }
+
+    public void restoreState(GameStateMemento memento) {
+        if (memento == null) return;
+
+        this.currentQuestionIndex = memento.getCurrentIndex();
+        this.score = memento.getScore();
+        this.questions = memento.getQuestions();
+
+        notifyQuestionChanged(currentQuestionIndex + 1, questions.size());
     }
 
 }
