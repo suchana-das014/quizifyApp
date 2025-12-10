@@ -5,22 +5,13 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
 import com.example.quizio.models.MCQQuestion;
-import com.example.quizio.models.QuestionFactory;
 import com.example.quizio.models.QuestionModel;
-import com.example.quizio.strategies.HardMode;
-import com.example.quizio.strategies.NormalMode;
-import com.example.quizio.strategies.ScoringStrategy;
-import com.example.quizio.strategies.TimedMode;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class PlayActivity extends AppCompatActivity {
 
@@ -28,22 +19,19 @@ public class PlayActivity extends AppCompatActivity {
     private Button btnOption1, btnOption2, btnOption3, btnOption4, btnNext, btnBack;
     private LinearProgressIndicator progressBar;
 
-    private List<QuestionModel> questionList;
+    private ArrayList<QuestionModel> questionList;
     private int currentQuestionIndex = 0;
     private int score = 0;
     private String selectedAnswer = "";
-    private String category;
-    private String gameMode;
+    private String category = "General Knowledge";
     private boolean answered = false;
-    private ScoringStrategy scoringStrategy;
-    private long questionStartTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
-        // Bind UI components
+        // Bind views
         tvQuestionCounter = findViewById(R.id.tvQuestionCounter);
         tvQuestion = findViewById(R.id.tvQuestion);
         btnOption1 = findViewById(R.id.btnOption1);
@@ -54,65 +42,56 @@ public class PlayActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         progressBar = findViewById(R.id.progressBar);
 
-        // Back button finishes activity
         btnBack.setOnClickListener(v -> finish());
 
-        // Get category and game mode from intent extras
+        // Get category only
         category = getIntent().getStringExtra("category");
-        gameMode = getIntent().getStringExtra("gameMode");
-
-        if (category == null || category.isEmpty()) {
-            category = "General Knowledge";
-        }
-        if (gameMode == null || gameMode.isEmpty()) {
-            gameMode = "normal";
-        }
-
-        // Initialize scoring strategy based on game mode
-        setupScoringStrategy(gameMode);
+        if (category == null || category.isEmpty()) category = "General Knowledge";
 
         loadQuestions(category);
+
+        if (questionList.isEmpty()) {
+            Toast.makeText(this, "No questions loaded!", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         showQuestion();
 
-        // Option buttons click
-        Button[] optionButtons = {btnOption1, btnOption2, btnOption3, btnOption4};
-        for (Button btn : optionButtons) {
+        // Option selection
+        Button[] options = {btnOption1, btnOption2, btnOption3, btnOption4};
+        for (Button btn : options) {
             btn.setOnClickListener(v -> {
                 if (answered) return;
                 selectedAnswer = btn.getText().toString();
                 resetOptionColors();
-                // Use ContextCompat instead of deprecated getResources().getColor()
-                btn.setBackgroundColor(ContextCompat.getColor(PlayActivity.this, R.color.accent_color));
+                btn.setBackgroundColor(ContextCompat.getColor(this, R.color.accent_color));
                 btnNext.setEnabled(true);
             });
         }
 
-        // Next button click logic
+        // Next button logic
         btnNext.setOnClickListener(v -> {
             if (!answered) {
                 if (selectedAnswer.isEmpty()) return;
 
                 checkAnswerAndShowColors();
                 answered = true;
-
-                if (currentQuestionIndex == questionList.size() - 1) {
-                    btnNext.setText("Finish");
-                } else {
-                    btnNext.setText("Next Question");
-                }
+                btnNext.setText(currentQuestionIndex == questionList.size() - 1 ? "Finish" : "Next Question");
                 setOptionsEnabled(false);
             } else {
                 currentQuestionIndex++;
                 if (currentQuestionIndex < questionList.size()) {
                     showQuestion();
                     answered = false;
+                    selectedAnswer = "";
                     btnNext.setText("Submit");
                     setOptionsEnabled(true);
                 } else {
-                    Intent intent = new Intent(PlayActivity.this, ResultActivity.class);
+                    // Go to Result
+                    Intent intent = new Intent(this, ResultActivity.class);
                     intent.putExtra("score", score);
                     intent.putExtra("total", questionList.size());
-                    intent.putExtra("gameMode", gameMode);
                     intent.putExtra("category", category);
                     startActivity(intent);
                     finish();
@@ -121,127 +100,56 @@ public class PlayActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
-
-    private void setupScoringStrategy(String mode) {
-        switch (mode) {
-            case "hard":
-                scoringStrategy = new HardMode();
-                break;
-            case "timed":
-                scoringStrategy = new TimedMode();
-                break;
-            case "normal":
-            default:
-                scoringStrategy = new NormalMode();
-                break;
-        }
-    }
-
     private void loadQuestions(String category) {
         questionList = new ArrayList<>();
 
-        switch (category) {
-            case "General Knowledge":
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Capital of France?",
-                        new ArrayList<>(Arrays.asList("Paris", "London", "Rome", "Berlin")), "Paris", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Largest planet in Solar System?",
-                        new ArrayList<>(Arrays.asList("Mars", "Jupiter", "Saturn", "Venus")), "Jupiter", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Who wrote 'Hamlet'?",
-                        new ArrayList<>(Arrays.asList("Mark Twain", "William Shakespeare", "Charles Dickens", "Jane Austen")), "William Shakespeare", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "The Great Wall is located in which country?",
-                        new ArrayList<>(Arrays.asList("India", "China", "Japan", "Korea")), "China", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which continent is Egypt in?",
-                        new ArrayList<>(Arrays.asList("Africa", "Asia", "Europe", "Australia")), "Africa", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "How many colors are in a rainbow?",
-                        new ArrayList<>(Arrays.asList("5", "6", "7", "8")), "7", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "The currency of Japan is?",
-                        new ArrayList<>(Arrays.asList("Yuan", "Yen", "Won", "Dollar")), "Yen", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What is the tallest mountain in the world?",
-                        new ArrayList<>(Arrays.asList("K2", "Everest", "Kangchenjunga", "Lhotse")), "Everest", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Who painted the Mona Lisa?",
-                        new ArrayList<>(Arrays.asList("Vincent Van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Claude Monet")), "Leonardo da Vinci", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which ocean is the largest?",
-                        new ArrayList<>(Arrays.asList("Atlantic", "Indian", "Arctic", "Pacific")), "Pacific", category));
-                break;
-
-            case "Science":
-                questionList.add(QuestionFactory.createQuestion("MCQ", "H2O is chemical name for?",
-                        new ArrayList<>(Arrays.asList("Hydrogen", "Oxygen", "Water", "Helium")), "Water", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Speed of light is approximately?",
-                        new ArrayList<>(Arrays.asList("300,000 km/s", "150,000 km/s", "1,000 km/s", "10,000 km/s")), "300,000 km/s", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which gas is most abundant in the Earth's atmosphere?",
-                        new ArrayList<>(Arrays.asList("Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen")), "Nitrogen", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What planet is known as the Red Planet?",
-                        new ArrayList<>(Arrays.asList("Venus", "Mars", "Jupiter", "Saturn")), "Mars", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What is the human body's largest organ?",
-                        new ArrayList<>(Arrays.asList("Heart", "Liver", "Skin", "Kidney")), "Skin", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "The process by which plants make food is called?",
-                        new ArrayList<>(Arrays.asList("Photosynthesis", "Respiration", "Transpiration", "Fermentation")), "Photosynthesis", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Atomic number of Hydrogen is?",
-                        new ArrayList<>(Arrays.asList("1", "2", "3", "4")), "1", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Sound travels fastest in?",
-                        new ArrayList<>(Arrays.asList("Air", "Water", "Steel", "Vacuum")), "Steel", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What vitamin is produced when skin is exposed to sunlight?",
-                        new ArrayList<>(Arrays.asList("Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D")), "Vitamin D", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which particle has a negative charge?",
-                        new ArrayList<>(Arrays.asList("Proton", "Neutron", "Electron", "Photon")), "Electron", category));
-                break;
-
-            case "Sports":
-                questionList.add(QuestionFactory.createQuestion("MCQ", "How many players in a football team?",
-                        new ArrayList<>(Arrays.asList("9", "10", "11", "12")), "11", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "In which sport is the term 'home run' used?",
-                        new ArrayList<>(Arrays.asList("Cricket", "Baseball", "Football", "Tennis")), "Baseball", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which country won the first FIFA World Cup?",
-                        new ArrayList<>(Arrays.asList("Brazil", "Germany", "Uruguay", "Italy")), "Uruguay", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "The Olympics are held every how many years?",
-                        new ArrayList<>(Arrays.asList("2", "3", "4", "5")), "4", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which sport uses a shuttlecock?",
-                        new ArrayList<>(Arrays.asList("Tennis", "Badminton", "Squash", "Table Tennis")), "Badminton", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "In tennis, what is a score of zero called?",
-                        new ArrayList<>(Arrays.asList("Love", "Zero", "Nil", "Duck")), "Love", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Michael Jordan was famous in which sport?",
-                        new ArrayList<>(Arrays.asList("Football", "Basketball", "Baseball", "Golf")), "Basketball", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "How many points is a touchdown worth in American football?",
-                        new ArrayList<>(Arrays.asList("3", "6", "7", "1")), "6", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which sport is known as the 'king of sports'?",
-                        new ArrayList<>(Arrays.asList("Football", "Basketball", "Cricket", "Hockey")), "Football", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What color card is shown for a foul in soccer?",
-                        new ArrayList<>(Arrays.asList("Red", "Blue", "Green", "Yellow")), "Red", category));
-                break;
-
-            case "Technology":
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Android is developed by?",
-                        new ArrayList<>(Arrays.asList("Apple", "Microsoft", "Google", "IBM")), "Google", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What does CPU stand for?",
-                        new ArrayList<>(Arrays.asList("Central Process Unit", "Central Processing Unit", "Computer Personal Unit", "Central Processor Unit")), "Central Processing Unit", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "HTML stands for?",
-                        new ArrayList<>(Arrays.asList("HyperText Markup Language", "HyperText Makeup Language", "HyperText Mark Language", "HyperText Markdown Language")), "HyperText Markup Language", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which company created the iPhone?",
-                        new ArrayList<>(Arrays.asList("Apple", "Samsung", "Nokia", "Sony")), "Apple", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "RAM stands for?",
-                        new ArrayList<>(Arrays.asList("Random Access Memory", "Read Access Memory", "Run Access Memory", "Random Actual Memory")), "Random Access Memory", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What is the main language used for Android development?",
-                        new ArrayList<>(Arrays.asList("Java", "Python", "Swift", "Kotlin")), "Kotlin", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What does USB stand for?",
-                        new ArrayList<>(Arrays.asList("Universal Serial Bus", "Universal Service Bus", "Unified Serial Bus", "Universal System Bus")), "Universal Serial Bus", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Which protocol is used to send emails?",
-                        new ArrayList<>(Arrays.asList("HTTP", "SMTP", "FTP", "POP3")), "SMTP", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "The first electronic computer was called?",
-                        new ArrayList<>(Arrays.asList("ENIAC", "UNIVAC", "EDSAC", "ABC")), "ENIAC", category));
-                questionList.add(QuestionFactory.createQuestion("MCQ", "What is an IP address used for?",
-                        new ArrayList<>(Arrays.asList("Identifying a device on the internet", "Locating a file", "Programming a device", "Managing software")), "Identifying a device on the internet", category));
-                break;
-
-            default:
-                questionList.add(QuestionFactory.createQuestion("MCQ", "Sample Question?",
-                        new ArrayList<>(Arrays.asList("A", "B", "C", "D")), "A", "Default"));
-                break;
+        if (category.equals("General Knowledge")) {
+            questionList.add(new MCQQuestion("Capital of France?", new ArrayList<>(Arrays.asList("Paris", "London", "Berlin", "Madrid")), "Paris", category));
+            questionList.add(new MCQQuestion("Largest planet?", new ArrayList<>(Arrays.asList("Earth", "Jupiter", "Saturn", "Mars")), "Jupiter", category));
+            questionList.add(new MCQQuestion("Who wrote 'Romeo and Juliet'?", new ArrayList<>(Arrays.asList("Shakespeare", "Dickens", "Twain", "Austen")), "Shakespeare", category));
+            questionList.add(new MCQQuestion("Currency of Japan?", new ArrayList<>(Arrays.asList("Yuan", "Yen", "Won", "Rupee")), "Yen", category));
+            questionList.add(new MCQQuestion("Tallest mountain?", new ArrayList<>(Arrays.asList("K2", "Everest", "Kangchenjunga", "Lhotse")), "Everest", category));
+            questionList.add(new MCQQuestion("How many continents?", new ArrayList<>(Arrays.asList("5", "6", "7", "8")), "7", category));
+            questionList.add(new MCQQuestion("Biggest ocean?", new ArrayList<>(Arrays.asList("Atlantic", "Indian", "Arctic", "Pacific")), "Pacific", category));
+            questionList.add(new MCQQuestion("Inventor of telephone?", new ArrayList<>(Arrays.asList("Edison", "Bell", "Tesla", "Einstein")), "Bell", category));
+            questionList.add(new MCQQuestion("Color of emerald?", new ArrayList<>(Arrays.asList("Red", "Blue", "Green", "Yellow")), "Green", category));
+            questionList.add(new MCQQuestion("Smallest prime number?", new ArrayList<>(Arrays.asList("0", "1", "2", "3")), "2", category));
+        }
+        else if (category.equals("Science")) {
+            questionList.add(new MCQQuestion("Chemical symbol for water?", new ArrayList<>(Arrays.asList("O2", "H2O", "CO2", "NaCl")), "H2O", category));
+            questionList.add(new MCQQuestion("Speed of light?", new ArrayList<>(Arrays.asList("300,000 km/s", "150,000 km/s", "500,000 km/s", "100,000 km/s")), "300,000 km/s", category));
+            questionList.add(new MCQQuestion("Red planet?", new ArrayList<>(Arrays.asList("Venus", "Mars", "Jupiter", "Saturn")), "Mars", category));
+            questionList.add(new MCQQuestion("Largest organ in human body?", new ArrayList<>(Arrays.asList("Heart", "Brain", "Skin", "Liver")), "Skin", category));
+            questionList.add(new MCQQuestion("Photosynthesis makes?", new ArrayList<>(Arrays.asList("Oxygen", "Carbon", "Nitrogen", "Hydrogen")), "Oxygen", category));
+            questionList.add(new MCQQuestion("Atomic number of Hydrogen?", new ArrayList<>(Arrays.asList("1", "2", "3", "4")), "1", category));
+            questionList.add(new MCQQuestion("Sound fastest in?", new ArrayList<>(Arrays.asList("Air", "Water", "Steel", "Vacuum")), "Steel", category));
+            questionList.add(new MCQQuestion("Vitamin from sunlight?", new ArrayList<>(Arrays.asList("A", "B", "C", "D")), "D", category));
+            questionList.add(new MCQQuestion("DNA stands for?", new ArrayList<>(Arrays.asList("Deoxyribonucleic Acid", "Data Nucleic Acid", "Double Nucleic Acid", "None")), "Deoxyribonucleic Acid", category));
+            questionList.add(new MCQQuestion("Unit of force?", new ArrayList<>(Arrays.asList("Joule", "Watt", "Newton", "Pascal")), "Newton", category));
+        }
+        else if (category.equals("Sports")) {
+            questionList.add(new MCQQuestion("Players in football team?", new ArrayList<>(Arrays.asList("9", "10", "11", "12")), "11", category));
+            questionList.add(new MCQQuestion("Home run is used in?", new ArrayList<>(Arrays.asList("Cricket", "Baseball", "Football", "Hockey")), "Baseball", category));
+            questionList.add(new MCQQuestion("Olympics every how many years?", new ArrayList<>(Arrays.asList("2", "3", "4", "5")), "4", category));
+            questionList.add(new MCQQuestion("Shuttlecock used in?", new ArrayList<>(Arrays.asList("Tennis", "Badminton", "Squash", "Golf")), "Badminton", category));
+            questionList.add(new MCQQuestion("Zero score in tennis?", new ArrayList<>(Arrays.asList("Nil", "Love", "Duck", "Zero")), "Love", category));
+            questionList.add(new MCQQuestion("Michael Jordan played?", new ArrayList<>(Arrays.asList("Football", "Basketball", "Baseball", "Tennis")), "Basketball", category));
+            questionList.add(new MCQQuestion("FIFA World Cup first won by?", new ArrayList<>(Arrays.asList("Brazil", "Germany", "Uruguay", "Italy")), "Uruguay", category));
+            questionList.add(new MCQQuestion("Cricket World Cup 2023 winner?", new ArrayList<>(Arrays.asList("India", "England", "Australia", "New Zealand")), "Australia", category));
+            questionList.add(new MCQQuestion("Wimbledon is for?", new ArrayList<>(Arrays.asList("Football", "Cricket", "Tennis", "Golf")), "Tennis", category));
+            questionList.add(new MCQQuestion("Fastest man on earth?", new ArrayList<>(Arrays.asList("Bolt", "Gatlin", "Blake", "Powell")), "Bolt", category));
+        }
+        else if (category.equals("Technology")) {
+            questionList.add(new MCQQuestion("Android developed by?", new ArrayList<>(Arrays.asList("Apple", "Microsoft", "Google", "Amazon")), "Google", category));
+            questionList.add(new MCQQuestion("CPU stands for?", new ArrayList<>(Arrays.asList("Central Processing Unit", "Computer Processing Unit", "Central Power Unit", "Core Processing Unit")), "Central Processing Unit", category));
+            questionList.add(new MCQQuestion("HTML is for?", new ArrayList<>(Arrays.asList("Styling", "Structure", "Behavior", "Database")), "Structure", category));
+            questionList.add(new MCQQuestion("iPhone made by?", new ArrayList<>(Arrays.asList("Samsung", "Apple", "Nokia", "OnePlus")), "Apple", category));
+            questionList.add(new MCQQuestion("RAM stands for?", new ArrayList<>(Arrays.asList("Read Access Memory", "Random Access Memory", "Run Access Memory", "Real Access Memory")), "Random Access Memory", category));
+            questionList.add(new MCQQuestion("Main language for Android now?", new ArrayList<>(Arrays.asList("Java", "Kotlin", "Dart", "Swift")), "Kotlin", category));
+            questionList.add(new MCQQuestion("USB stands for?", new ArrayList<>(Arrays.asList("Universal Serial Bus", "United Serial Bus", "Universal System Bus", "None")), "Universal Serial Bus", category));
+            questionList.add(new MCQQuestion("Inventor of WWW?", new ArrayList<>(Arrays.asList("Bill Gates", "Tim Berners-Lee", "Steve Jobs", "Elon Musk")), "Tim Berners-Lee", category));
+            questionList.add(new MCQQuestion("Bitcoin is a?", new ArrayList<>(Arrays.asList("Stock", "Cryptocurrency", "Bond", "Fiat")), "Cryptocurrency", category));
+            questionList.add(new MCQQuestion("AI stands for?", new ArrayList<>(Arrays.asList("Artificial Intelligence", "Automated Intelligence", "Advanced Internet", "None")), "Artificial Intelligence", category));
         }
     }
 
@@ -249,72 +157,45 @@ public class PlayActivity extends AppCompatActivity {
         resetOptionColors();
         btnNext.setEnabled(false);
         selectedAnswer = "";
-        questionStartTime = System.currentTimeMillis(); // Start timing for this question
+        answered = false;
 
-        QuestionModel currentQuestion = questionList.get(currentQuestionIndex);
-
-        tvQuestion.setText(currentQuestion.getQuestion());
+        QuestionModel q = questionList.get(currentQuestionIndex);
+        tvQuestion.setText(q.getQuestion());
         tvQuestionCounter.setText((currentQuestionIndex + 1) + "/" + questionList.size());
-
         progressBar.setProgressCompat((currentQuestionIndex + 1) * 100 / questionList.size(), true);
 
-        // Handle different question types polymorphically
-        if (currentQuestion instanceof MCQQuestion) {
-            MCQQuestion mcqQuestion = (MCQQuestion) currentQuestion;
-            btnOption1.setText(mcqQuestion.getOptions().get(0));
-            btnOption2.setText(mcqQuestion.getOptions().get(1));
-            btnOption3.setText(mcqQuestion.getOptions().get(2));
-            btnOption4.setText(mcqQuestion.getOptions().get(3));
-
-            // Make sure option buttons are visible
-            setOptionButtonsVisibility(true);
-        } else {
-            // Handle other question types (TrueFalse, FillBlank)
-            // For now, hide option buttons for non-MCQ questions
-            setOptionButtonsVisibility(false);
+        if (q instanceof MCQQuestion) {
+            MCQQuestion mcq = (MCQQuestion) q;
+            btnOption1.setText(mcq.getOptions().get(0));
+            btnOption2.setText(mcq.getOptions().get(1));
+            btnOption3.setText(mcq.getOptions().get(2));
+            btnOption4.setText(mcq.getOptions().get(3));
         }
     }
-
     private void checkAnswerAndShowColors() {
-        QuestionModel currentQuestion = questionList.get(currentQuestionIndex);
-        String correctAnswer = currentQuestion.getCorrectAnswer();
-        boolean isCorrect = selectedAnswer.equals(correctAnswer);
-
-        // Calculate time taken for this question (for timed mode)
-        long timeTaken = System.currentTimeMillis() - questionStartTime;
+        QuestionModel q = questionList.get(currentQuestionIndex);
+        boolean isCorrect = q.checkAnswer(selectedAnswer);
 
         resetOptionColors();
-        colorOptionButton(correctAnswer, ContextCompat.getColor(this, R.color.correct_color));
-
+        colorOptionButton(q.getCorrectAnswer(), ContextCompat.getColor(this, R.color.correct_color));
         if (!isCorrect) {
             colorOptionButton(selectedAnswer, ContextCompat.getColor(this, R.color.wrong_color));
         }
 
-        // Use scoring strategy instead of simple increment
-        int pointsEarned = scoringStrategy.calculateScore(isCorrect, (int) timeTaken);
-        score += pointsEarned;
-
-        // Show points earned for this question
-        showPointsEarned(pointsEarned, isCorrect);
-    }
-
-    private void showPointsEarned(int points, boolean isCorrect) {
-        String message = isCorrect ?
-                "Correct! +" + points + " points" :
-                "Wrong! +" + points + " points";
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void colorOptionButton(String answerText, int color) {
-        if (btnOption1.getText().toString().equals(answerText)) {
-            btnOption1.setBackgroundColor(color);
-        } else if (btnOption2.getText().toString().equals(answerText)) {
-            btnOption2.setBackgroundColor(color);
-        } else if (btnOption3.getText().toString().equals(answerText)) {
-            btnOption3.setBackgroundColor(color);
-        } else if (btnOption4.getText().toString().equals(answerText)) {
-            btnOption4.setBackgroundColor(color);
+        // এখানে +1 পয়েন্ট!
+        if (isCorrect) {
+            score++;
+            Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void colorOptionButton(String text, int color) {
+        if (btnOption1.getText().toString().equals(text)) btnOption1.setBackgroundColor(color);
+        if (btnOption2.getText().toString().equals(text)) btnOption2.setBackgroundColor(color);
+        if (btnOption3.getText().toString().equals(text)) btnOption3.setBackgroundColor(color);
+        if (btnOption4.getText().toString().equals(text)) btnOption4.setBackgroundColor(color);
     }
 
     private void setOptionsEnabled(boolean enabled) {
@@ -324,19 +205,11 @@ public class PlayActivity extends AppCompatActivity {
         btnOption4.setEnabled(enabled);
     }
 
-    private void setOptionButtonsVisibility(boolean visible) {
-        int visibility = visible ? android.view.View.VISIBLE : android.view.View.GONE;
-        btnOption1.setVisibility(visibility);
-        btnOption2.setVisibility(visibility);
-        btnOption3.setVisibility(visibility);
-        btnOption4.setVisibility(visibility);
-    }
-
     private void resetOptionColors() {
-        int defaultColor = ContextCompat.getColor(this, android.R.color.transparent);
-        btnOption1.setBackgroundColor(defaultColor);
-        btnOption2.setBackgroundColor(defaultColor);
-        btnOption3.setBackgroundColor(defaultColor);
-        btnOption4.setBackgroundColor(defaultColor);
+        int trans = ContextCompat.getColor(this, android.R.color.transparent);
+        btnOption1.setBackgroundColor(trans);
+        btnOption2.setBackgroundColor(trans);
+        btnOption3.setBackgroundColor(trans);
+        btnOption4.setBackgroundColor(trans);
     }
 }

@@ -28,19 +28,20 @@
         android:padding="32dp">
 
         <!-- App Name -->
+
+        <!-- Play Button -->
         <TextView
             android:id="@+id/appTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_head"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_color"
+            android:layout_marginBottom="64dp"
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.05"
-            android:layout_marginBottom="64dp" />
+            android:text="@string/app_head"
+            android:textColor="@color/primary_color"
+            android:textSize="40sp"
+            android:textStyle="bold" />
 
-        <!-- Play Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPlay"
             android:layout_width="match_parent"
