@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);  // এইটা থাকবে
 
         btnPlay = findViewById(R.id.btnPlay);
         btnSettings = findViewById(R.id.btnSettings);
@@ -29,5 +29,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnExit.setOnClickListener(v -> finishAffinity());
+
     }
+
+    // }
 }
