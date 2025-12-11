@@ -7,6 +7,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
+// Command Pattern imports for Skip only
+import com.example.quizio.command.SkipCommand;
+import com.example.quizio.command.QuizReceiver;
+
 import com.example.quizio.models.MCQQuestion;
 import com.example.quizio.models.QuestionModel;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -16,7 +21,7 @@ import java.util.Arrays;
 public class PlayActivity extends AppCompatActivity {
 
     private TextView tvQuestionCounter, tvQuestion;
-    private Button btnOption1, btnOption2, btnOption3, btnOption4, btnNext, btnBack;
+    private Button btnOption1, btnOption2, btnOption3, btnOption4, btnNext, btnBack, btnSkip;
     private LinearProgressIndicator progressBar;
 
     private ArrayList<QuestionModel> questionList;
@@ -26,10 +31,16 @@ public class PlayActivity extends AppCompatActivity {
     private String category = "General Knowledge";
     private boolean answered = false;
 
+    // Command Pattern for Skip
+    private QuizReceiver quizReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+
+        // Initialize Command Pattern receiver
+        quizReceiver = new QuizReceiver();
 
         // Bind views
         tvQuestionCounter = findViewById(R.id.tvQuestionCounter);
@@ -41,6 +52,9 @@ public class PlayActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btnNext);
         btnBack = findViewById(R.id.btnBack);
         progressBar = findViewById(R.id.progressBar);
+
+        // Skip button (add this to your XML)
+        btnSkip = findViewById(R.id.btnSkip);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -69,6 +83,35 @@ public class PlayActivity extends AppCompatActivity {
                 btnNext.setEnabled(true);
             });
         }
+
+        // Skip button using Command Pattern
+        btnSkip.setOnClickListener(v -> {
+            QuestionModel currentQuestion = questionList.get(currentQuestionIndex);
+
+            // Create and execute Skip Command
+            SkipCommand skipCommand = new SkipCommand(currentQuestion, quizReceiver);
+            skipCommand.execute();
+
+            Toast.makeText(this, "Question skipped!", Toast.LENGTH_SHORT).show();
+
+            // Move to next question automatically
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionList.size()) {
+                showQuestion();
+                answered = false;
+                selectedAnswer = "";
+                btnNext.setText("Submit");
+                setOptionsEnabled(true);
+            } else {
+                // Go to Result
+                Intent intent = new Intent(this, ResultActivity.class);
+                intent.putExtra("score", score);
+                intent.putExtra("total", questionList.size());
+                intent.putExtra("category", category);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         // Next button logic
         btnNext.setOnClickListener(v -> {
@@ -171,7 +214,13 @@ public class PlayActivity extends AppCompatActivity {
             btnOption3.setText(mcq.getOptions().get(2));
             btnOption4.setText(mcq.getOptions().get(3));
         }
+
+        // Check if this question was skipped
+        if (quizReceiver.isQuestionSkipped(q)) {
+            Toast.makeText(this, "This question was previously skipped", Toast.LENGTH_SHORT).show();
+        }
     }
+
     private void checkAnswerAndShowColors() {
         QuestionModel q = questionList.get(currentQuestionIndex);
         boolean isCorrect = q.checkAnswer(selectedAnswer);
