@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);  // এইটা থাকবে
+        setContentView(R.layout.activity_main);
 
         btnPlay = findViewById(R.id.btnPlay);
         btnSettings = findViewById(R.id.btnSettings);
