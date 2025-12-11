@@ -9,6 +9,10 @@ import com.example.quizio.strategies.ScoringStrategy;
 import com.example.quizio.strategies.TimedMode;
 import com.example.quizio.memento.GameStateMemento;
 import com.example.quizio.observer.GameSubject;
+import com.example.quizio.adapter.ExternalQuestion;
+import com.example.quizio.adapter.ExternalQuestionAdapter;
+import com.example.quizio.adapter.QuestionInterface;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +51,9 @@ public class GameFacade extends GameSubject {
 
     public void loadQuestions(String category) {
         questions.clear();
+
+        ExternalQuestion q1 = new ExternalQuestion("Sun rises from?", "East");
+        addExternalQuestion(q1);
 
         switch (category) {
             case "General Knowledge":
@@ -189,7 +196,7 @@ public class GameFacade extends GameSubject {
     }
 
 
-    // ------------------ MEMENTO SUPPORT ------------------
+    //  MEMENTO SUPPORT
 
     public GameStateMemento saveState() {
         return new GameStateMemento(currentQuestionIndex, score, questions);
@@ -204,5 +211,20 @@ public class GameFacade extends GameSubject {
 
         notifyQuestionChanged(currentQuestionIndex + 1, questions.size());
     }
+
+    //adapter
+    public void addExternalQuestion(ExternalQuestion externalQuestion) {
+        ExternalQuestionAdapter adapter = new ExternalQuestionAdapter(externalQuestion);
+
+        questions.add(
+                new MCQQuestion(
+                        adapter.getQuestion(),
+                        Arrays.asList("A", "B", "C", "D"),
+                        adapter.getCorrectAnswer(),
+                        "External"
+                )
+        );
+    }
+
 
 }

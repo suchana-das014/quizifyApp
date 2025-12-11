@@ -70,5 +70,8 @@ public abstract class QuestionModel {
         this.category = category;
     }
 
+
     public abstract List<String> getOptions();
+
+  
 }
