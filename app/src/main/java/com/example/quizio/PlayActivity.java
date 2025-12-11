@@ -8,7 +8,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-// Command Pattern imports for Skip only
+// Strategy Pattern imports
+import com.example.quizio.strategy.QuestionContext;
+import com.example.quizio.strategy.StrategyFactory;
+import com.example.quizio.strategy.QuestionStrategy;
+
+// Command Pattern imports
 import com.example.quizio.command.SkipCommand;
 import com.example.quizio.command.QuizReceiver;
 
@@ -24,15 +29,19 @@ public class PlayActivity extends AppCompatActivity {
     private Button btnOption1, btnOption2, btnOption3, btnOption4, btnNext, btnBack, btnSkip;
     private LinearProgressIndicator progressBar;
 
+    // Strategy Pattern Components
+    private QuestionContext questionContext;
+    private Button[] optionButtons;
+
+    // Command Pattern for Skip
+    private QuizReceiver quizReceiver;
+
     private ArrayList<QuestionModel> questionList;
     private int currentQuestionIndex = 0;
     private int score = 0;
     private String selectedAnswer = "";
     private String category = "General Knowledge";
     private boolean answered = false;
-
-    // Command Pattern for Skip
-    private QuizReceiver quizReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +65,9 @@ public class PlayActivity extends AppCompatActivity {
         // Skip button
         btnSkip = findViewById(R.id.btnSkip);
 
+        // Setup button array for Strategy Pattern
+        optionButtons = new Button[]{btnOption1, btnOption2, btnOption3, btnOption4};
+
         btnBack.setOnClickListener(v -> finish());
 
         // Get category only
@@ -72,15 +84,20 @@ public class PlayActivity extends AppCompatActivity {
 
         showQuestion();
 
-        // Option selection
-        Button[] options = {btnOption1, btnOption2, btnOption3, btnOption4};
-        for (Button btn : options) {
+        // Option selection using Strategy Pattern
+        for (Button btn : optionButtons) {
             btn.setOnClickListener(v -> {
                 if (answered) return;
-                selectedAnswer = btn.getText().toString();
+
                 resetOptionColors();
-                btn.setBackgroundColor(ContextCompat.getColor(this, R.color.accent_color));
-                btnNext.setEnabled(true);
+
+                selectedAnswer = btn.getText().toString();
+
+                // Using Strategy Pattern to handle option click
+                questionContext.handleOptionClick(btn);
+
+                // Enable next button if answer selected
+                btnNext.setEnabled(questionContext.isAnswerSelected());
             });
         }
 
@@ -116,7 +133,10 @@ public class PlayActivity extends AppCompatActivity {
         // Next button logic
         btnNext.setOnClickListener(v -> {
             if (!answered) {
-                if (selectedAnswer.isEmpty()) return;
+                if (!questionContext.isAnswerSelected()) {
+                    Toast.makeText(this, "Please select an answer!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 checkAnswerAndShowColors();
                 answered = true;
@@ -141,6 +161,17 @@ public class PlayActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setupQuestionContext(QuestionModel question) {
+        // Use Strategy Factory to create appropriate strategy
+        QuestionStrategy strategy = StrategyFactory.createStrategy(question, this);
+
+        // Create context with the strategy
+        questionContext = new QuestionContext(strategy);
+
+        // Setup UI using strategy
+        questionContext.setupUI(optionButtons);
     }
 
     private void loadQuestions(String category) {
@@ -197,7 +228,11 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void showQuestion() {
-        resetOptionColors();
+        // Reset strategy options
+        if (questionContext != null) {
+            questionContext.resetOptions(optionButtons);
+        }
+
         btnNext.setEnabled(false);
         selectedAnswer = "";
         answered = false;
@@ -207,6 +242,10 @@ public class PlayActivity extends AppCompatActivity {
         tvQuestionCounter.setText((currentQuestionIndex + 1) + "/" + questionList.size());
         progressBar.setProgressCompat((currentQuestionIndex + 1) * 100 / questionList.size(), true);
 
+        // Setup Strategy Pattern for this question
+        setupQuestionContext(q);
+
+        // Set options text for MCQ questions
         if (q instanceof MCQQuestion) {
             MCQQuestion mcq = (MCQQuestion) q;
             btnOption1.setText(mcq.getOptions().get(0));
@@ -223,27 +262,19 @@ public class PlayActivity extends AppCompatActivity {
 
     private void checkAnswerAndShowColors() {
         QuestionModel q = questionList.get(currentQuestionIndex);
-        boolean isCorrect = q.checkAnswer(selectedAnswer);
+        String selectedAnswer = questionContext.getSelectedAnswer();
+        boolean isCorrect = questionContext.checkAnswer(selectedAnswer, q.getCorrectAnswer());
 
-        resetOptionColors();
-        colorOptionButton(q.getCorrectAnswer(), ContextCompat.getColor(this, R.color.correct_color));
-        if (!isCorrect) {
-            colorOptionButton(selectedAnswer, ContextCompat.getColor(this, R.color.wrong_color));
-        }
-
+        // Use Strategy Pattern to highlight answers
         if (isCorrect) {
+            questionContext.highlightCorrectAnswer(optionButtons, q.getCorrectAnswer());
             score++;
             Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
         } else {
+            questionContext.highlightCorrectAnswer(optionButtons, q.getCorrectAnswer());
+            questionContext.highlightWrongAnswer(optionButtons, selectedAnswer, q.getCorrectAnswer());
             Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void colorOptionButton(String text, int color) {
-        if (btnOption1.getText().toString().equals(text)) btnOption1.setBackgroundColor(color);
-        if (btnOption2.getText().toString().equals(text)) btnOption2.setBackgroundColor(color);
-        if (btnOption3.getText().toString().equals(text)) btnOption3.setBackgroundColor(color);
-        if (btnOption4.getText().toString().equals(text)) btnOption4.setBackgroundColor(color);
     }
 
     private void setOptionsEnabled(boolean enabled) {
