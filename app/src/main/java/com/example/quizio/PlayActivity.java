@@ -53,7 +53,7 @@ public class PlayActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         progressBar = findViewById(R.id.progressBar);
 
-        // Skip button (add this to your XML)
+        // Skip button
         btnSkip = findViewById(R.id.btnSkip);
 
         btnBack.setOnClickListener(v -> finish());

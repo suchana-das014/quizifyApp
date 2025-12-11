@@ -18,7 +18,6 @@ public class SecondActivity extends AppCompatActivity {
         buttonSettings = findViewById(R.id.buttonSettings);
         buttonExit = findViewById(R.id.buttonExit);
 
-        // FIXED: Go to CategoryActivity instead of PlayActivity directly
         buttonPlay.setOnClickListener(v -> {
             Intent intent = new Intent(SecondActivity.this, CategoryActivity.class);
             startActivity(intent);
